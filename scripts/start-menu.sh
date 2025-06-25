@@ -1,5 +1,5 @@
-#!/bin/bash
-# MICRO JOURNAL 3000 Menu Launcher
+#!/bin/sh
+# MICRO JOURNAL 2000 Menu Launcher
 # Activate venv but skip welcomemenu.py - go directly to simple-menu
 
 # cd ~/.microjournal
@@ -18,4 +18,4 @@ fi
 
 # Run simple menu directly
 # echo "Loading simple menu..."
-python3 .microjournal/scripts/simple-menu.py
+~/.microjournal/scripts/menu

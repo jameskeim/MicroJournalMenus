@@ -1,6 +1,8 @@
 #!/bin/bash
-# wordcount.sh - Simple Word Count Tool for MICRO JOURNAL 3000
+# wordcount.sh - Simple Word Count Tool for MICRO JOURNAL 2000
 # Save as ~/.microjournal/scripts/wordcount.sh
+
+export FZF_DEFAULT_COMMAND="fd --type f"
 
 # Documents directory
 DOCS_DIR="$HOME/Documents"
@@ -101,11 +103,13 @@ count_file() {
   fi
 }
 
-# Function to count words for today (compact format)
+# Function to count words for today (columnar format)
 count_today() {
+  echo -e "\033[92mToday ($TODAY):\033[0m"
+  echo -e "\033[94mDATE       TIME   WC   TITLE\033[0m"
+
   total_words=0
   file_count=0
-  sessions_line=""
 
   # Find all markdown files from today
   for file in "$DOCS_DIR"/${TODAY}-*.md; do
@@ -113,14 +117,22 @@ count_today() {
       words=$(wc -w <"$file")
       filename=$(basename "$file")
 
-      # Extract time from filename (format: YYYY.MM.DD-HHMM.md)
-      time_part=$(echo "$filename" | sed 's/.*-\([0-9][0-9][0-9][0-9]\)\.md/\1/' | sed 's/\(..\)\(..\)/\1:\2/')
+      # Format word count with 4 digits
+      words_padded=$(printf "%04d" "$words")
 
-      # Build compact sessions line
-      if [ -n "$sessions_line" ]; then
-        sessions_line="$sessions_line "
+      # Extract time if it's a timestamped file
+      if [[ "$filename" =~ ^[0-9]{4}\.[0-9]{2}\.[0-9]{2}-[0-9]{4} ]]; then
+        # Extract time portion (HHMM) right after the date
+        time_part=$(echo "$filename" | sed 's/^[0-9]\{4\}\.[0-9]\{2\}\.[0-9]\{2\}-\([0-9]\{4\}\).*/\1/' | sed 's/\(..\)\(..\)/\1:\2/')
+        # Extract suffix (everything after YYYY.MM.DD-HHMM-)
+        suffix=$(echo "$filename" | sed 's/^[0-9]\{4\}\.[0-9]\{2\}\.[0-9]\{2\}-[0-9]\{4\}-*\(.*\)\.md$/\1/')
+        if [ -z "$suffix" ]; then
+          suffix="[untitled]"
+        fi
+        printf "\033[96m%s\033[0m \033[96m%s\033[0m \033[93m%s\033[0m %s\n" "$TODAY" "$time_part" "$words_padded" "$suffix"
+      else
+        printf "\033[96m%s %-5s\033[0m \033[93m%s\033[0m %s\n" "$TODAY" "" "$words_padded" "$filename"
       fi
-      sessions_line="$sessions_line\033[96m$time_part\033[0m(\033[93m$words\033[0m)"
 
       total_words=$((total_words + words))
       file_count=$((file_count + 1))
@@ -130,21 +142,8 @@ count_today() {
   if [ $file_count -eq 0 ]; then
     echo -e "\033[91mNo writing files found for today.\033[0m"
   else
-    # Calculate reading time
-    if [ $total_words -gt 0 ]; then
-      read_time=$((total_words / 200))
-      if [ $read_time -eq 0 ]; then
-        read_str="<1min"
-      else
-        read_str="~${read_time}min"
-      fi
-    else
-      read_str="0min"
-    fi
-
-    # Compact summary line
-    echo -e "\033[92mToday ($TODAY):\033[0m $file_count files, \033[92m$total_words\033[0m words, $read_str read"
-    echo -e "$sessions_line"
+    echo
+    echo -e "\033[92mTotal: $file_count files, $total_words words\033[0m"
   fi
   echo
 }
@@ -279,14 +278,18 @@ while true; do
     clear
     # Use fzf to select file from Documents directory
     if command -v fzf >/dev/null 2>&1; then
-      selected_file=$(find "$DOCS_DIR" -name "*.md" -type f 2>/dev/null | fzf --height=12 --reverse --no-border --prompt="Select file (Esc to cancel): " --preview='wc -w {} && echo && head -5 {}')
+      # Change to Documents directory and use relative paths
+      cd "$DOCS_DIR" || exit 1
+      selected_file=$(find . -name "*.md" -type f 2>/dev/null | sed 's|^\./||' | fzf --height=12 --reverse --no-border --prompt="Select file (Esc to cancel): " --preview='wc -w {} && echo && head -5 {}')
 
       if [ -n "$selected_file" ]; then
         echo
-        count_file "$selected_file"
+        count_file "$DOCS_DIR/$selected_file"
       else
         echo -e "\033[91mNo file selected.\033[0m"
       fi
+      # Return to original directory
+      cd - >/dev/null
     else
       # Fallback to manual entry if fzf is not available
       echo -n "Enter filename (or full path): "

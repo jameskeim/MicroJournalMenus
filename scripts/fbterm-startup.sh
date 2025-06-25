@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/sh
 # Save as ~/.microjournal/scripts/fbterm-startup.sh
 # Make executable with: chmod +x ~/.microjournal/scripts/fbterm-startup.sh
 
