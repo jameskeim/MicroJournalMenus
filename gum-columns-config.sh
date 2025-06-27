@@ -1,59 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Configurable Column Layout Menu
 # Easy configuration for non-programmers - just edit the arrays below!
-
-# ============================================================================
-# INSTALLATION DIRECTORY - Change this to move the entire system
-# ============================================================================
-MCRJRNL="${MCRJRNL:-$HOME/.microjournal}"
-
-# ============================================================================
-# ENVIRONMENT DEFAULTS - Override these with environment variables if needed
-# ============================================================================
-EDITOR="${EDITOR:-nvim}"
-SHELL_CMD="${SHELL:-/bin/zsh}"
-FILE_MANAGER="${FILE_MANAGER:-yazi}"
-MATRIX_CMD="${MATRIX_CMD:-neo}"
-TYPING_TUTOR="${TYPING_TUTOR:-tt}"
-OUTLINER="${OUTLINER:-hnb}"
-
-# ============================================================================
-# COMMAND AVAILABILITY CHECK - Verify optional tools are available
-# ============================================================================
-check_command_availability() {
-  # Check for gum (required for menu styling)
-  if ! command -v gum >/dev/null 2>&1; then
-    echo "Warning: 'gum' not found. Menu styling will be degraded."
-    echo "Install with: sudo apt install gum"
-    return 1
-  fi
-
-  # Check optional tools and provide fallbacks
-  if ! command -v "$FILE_MANAGER" >/dev/null 2>&1; then
-    echo "Note: File manager '$FILE_MANAGER' not found, falling back to 'ls'"
-    FILE_MANAGER="ls -la"
-  fi
-
-  if ! command -v "$EDITOR" >/dev/null 2>&1; then
-    echo "Note: Editor '$EDITOR' not found, falling back to 'nano'"
-    EDITOR="nano"
-  fi
-
-  if ! command -v "$SHELL_CMD" >/dev/null 2>&1; then
-    echo "Note: Shell '$SHELL_CMD' not found, falling back to 'bash'"
-    SHELL_CMD="bash"
-  fi
-
-  # Optional tools - warn but don't fail
-  for tool in "$MATRIX_CMD" "$TYPING_TUTOR" "$OUTLINER"; do
-    if ! command -v "$tool" >/dev/null 2>&1; then
-      echo "Note: Optional tool '$tool' not found (menu item will show error if selected)"
-    fi
-  done
-}
-
-# Run command availability check
-check_command_availability
 
 # ============================================================================
 # EASY CONFIGURATION - Edit these arrays to customize your menu
@@ -65,62 +12,50 @@ check_command_availability
 # ============================================================================
 
 # Column Names (these appear as headers above each column)
-COLUMN1_NAME="DRAFT"
-COLUMN2_NAME="PROCESS"
-COLUMN3_NAME="SHARE"
-COLUMN4_NAME="PAUSE"
+COLUMN1_NAME="WRITING"
+COLUMN2_NAME="FILING"
+COLUMN3_NAME="UTILITIES"
+COLUMN4_NAME="EXTRA"
 COLUMN5_NAME="CONTROL"
 
 # Column 1 Items
 COL1_ITEMS=(
-  "M:Markdown:$MCRJRNL/scripts/newMarkDown.sh"
-  "V:NeoVim:$EDITOR"
-  "J:Journal::"
-  "N:Notes:$MCRJRNL/scripts/notes.sh"
-  "O:Outline:$OUTLINER"
+  "M:Markdown:./scripts/newMarkDown.sh"
+  "W:Wordgrinder:./scripts/newwrdgrndr.sh"
+  "N:Neovim:nvim"
+  "C:Count Words:./scripts/wordcount.sh"
 )
 
 # Column 2 Items
 COL2_ITEMS=(
-  "G:Set Goals::"
-  "C:Word Count:$MCRJRNL/scripts/wordcount.sh"
-  "E:Explore Notes:$MCRJRNL/scripts/notes-explorer.sh"
-  "D:Dashboard::"
+  "F:File Manager:yazi"
+  "S:Share Files:./scripts/share.sh"
+  ":::" # Empty padding line
   ":::" # Empty padding line
 )
 
 # Column 3 Items
 COL3_ITEMS=(
-  "S:Share Files:$MCRJRNL/scripts/share.sh"
-  "F:File Manager:$FILE_MANAGER"
-  "B:Backup::"
-  ":::" # Empty padding line
-  ":::" # Empty padding line
+  "U:Up Network:./scripts/network-enable.sh"
+  "D:Down Network:./scripts/network-disable.sh"
+  "P:Pi Config:./scripts/config.sh"
+  "I:System Info:./scripts/sysinfo.sh"
 )
 
 # Column 4 Items
 COL4_ITEMS=(
-  "P:Prompts:$MCRJRNL/scripts/prompts.sh"
-  "I:Inspirations:$MCRJRNL/scripts/inspirations.sh"
-  "K:Keyboarding:$TYPING_TUTOR"
-  "X:MatriX:$MATRIX_CMD -c cyan"
+  "T:Time Clock:tty-clock"
+  "X:Matrix:neo"
+  "Z:Z Shell:zsh"
   ":::" # Empty padding line
 )
 
 # Column 5 Items
 COL5_ITEMS=(
-  "Z:Z Shell:$SHELL_CMD"
-  "A:About:neofetch"
-  "W:Wifi:$MCRJRNL/scripts/network.sh"
-  "H:Help:cat $MCRJRNL/README.md"
-  "Q:Quit:$MCRJRNL/scripts/quit.sh"
-)
-
-# Hidden Items (not displayed in menu but available for selection)
-HIDDEN_ITEMS=(
-  "0:Exit Menu:exit 0"
-  "1:Load Menu:reload"
-  "2:Pi Config:$MCRJRNL/scripts/config.sh"
+  "L:Load Menu:reload"
+  "R:Reboot:./scripts/reboot.sh"
+  "Q:Quit:./scripts/shutdown.sh"
+  ":::" # Empty padding line
 )
 
 # Column colors (you can change these numbers to different colors)
@@ -215,7 +150,6 @@ $menu_item"
 
 # Function to generate the complete menu layout
 generate_menu() {
-  export FORCE_COLOR=1
   # Header with dark yellow side bars and cyan text on black background
   local TITLE_TEXT=$(gum style --foreground 81 --background 0 --bold --width 20 --align center "MICRO JOURNAL 2000")
   local LEFT_BAR=$(gum style --background 136 --width 39 " ")
@@ -233,11 +167,10 @@ generate_menu() {
   local COLUMNS=$(gum join "$COL1" "$COL2" "$COL3" "$COL4" "$COL5")
 
   # Add left margin for centering
-  local COLUMNS_CENTERED=$(gum style --margin "0 0 0 0" "$COLUMNS")
+  local COLUMNS_CENTERED=$(gum style --margin "0 0 0 1" "$COLUMNS")
 
   # Output the complete menu without prompt (we'll add it separately)
   gum join --vertical --align center "$HEADER" "$COLUMNS_CENTERED"
-  # gum join --vertical "$HEADER" "$COLUMNS_CENTERED"
 }
 
 # Function to execute command based on key selection
@@ -245,8 +178,8 @@ execute_selection() {
   local choice="$1"
   local choice_lower=$(echo "$choice" | tr '[:upper:]' '[:lower:]')
 
-  # Search all item arrays for matching key including hidden items
-  local all_items=("${COL1_ITEMS[@]}" "${COL2_ITEMS[@]}" "${COL3_ITEMS[@]}" "${COL4_ITEMS[@]}" "${COL5_ITEMS[@]}" "${HIDDEN_ITEMS[@]}")
+  # Search all item arrays for matching key
+  local all_items=("${COL1_ITEMS[@]}" "${COL2_ITEMS[@]}" "${COL3_ITEMS[@]}" "${COL4_ITEMS[@]}" "${COL5_ITEMS[@]}")
 
   for item in "${all_items[@]}"; do
     # Skip padding entries
@@ -269,16 +202,16 @@ execute_selection() {
         echo -e "\nReloading menu..."
         rm -f "$CACHE_FILE"
         exec "$0"
+      elif [[ "$command" == "./scripts/shutdown.sh" ]]; then
+        echo -e "\nShutting down..."
+        eval "$command"
+        exit 0
+      elif [[ "$command" == "./scripts/reboot.sh" ]]; then
+        echo -e "\nRebooting..."
+        eval "$command"
+        exit 0
       else
-        # Execute command with minimal interference
-        if ! eval "$command"; then
-          echo -e "\nError: Command '$command' failed or not found."
-          echo "Press any key to continue..."
-          read -n 1 -s
-        fi
-        
-        # Basic cleanup only
-        clear
+        eval "$command"
       fi
       return
     fi
@@ -292,7 +225,7 @@ execute_selection() {
 # ============================================================================
 
 # Cache file for pre-computed menu (persistent across reboots)
-CACHE_DIR="$MCRJRNL"
+CACHE_DIR="$HOME/.microjournal"
 CACHE_FILE="$CACHE_DIR/menu_cache"
 
 # Ensure cache directory exists
@@ -318,9 +251,6 @@ fi
 
 if [[ "$REGENERATE" == "true" ]]; then
   clear
-  # Force gum to output colors even when redirected to file
-  export CLICOLOR_FORCE=1
-  export FORCE_COLOR=1
   generate_menu >"$CACHE_FILE"
 fi
 
@@ -339,10 +269,7 @@ while true; do
   printf "%*s\033[1;38;5;220mSelection: \033[0m" 44 ""
   read -n 1 -s CHOICE
 
-  # Show the selection in cyan and pause briefly
-  printf "\033[1;38;5;51m%s\033[0m" "$CHOICE"
-  sleep 0.5
-
   # Handle the selection
   execute_selection "$CHOICE"
 done
+

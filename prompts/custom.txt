@@ -1,0 +1,7 @@
+# Custom Writing Prompts
+# One prompt per line. Lines starting with # are ignored.
+# Add your own prompts below:
+
+Write about your most vivid childhood memory, but change one impossible detail.
+Describe the perfect day that you've never had.
+A story about getting trapped in a hot air ballon on your birthday.
