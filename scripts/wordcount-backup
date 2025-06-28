@@ -132,54 +132,11 @@ count_file() {
   fi
 }
 
-# Load goals if config exists
-load_goals() {
-  if [ -f "$HOME/.microjournal/config" ]; then
-    source "$HOME/.microjournal/config" 2>/dev/null
-  fi
-  daily_goal=${daily_goal:-500}
-}
-
-# Show progress bar
-show_progress() {
-  local current=$1
-  local goal=$2
-  local width=20
-  
-  if [ "$goal" -eq 0 ]; then
-    return
-  fi
-  
-  local percentage=$((current * 100 / goal))
-  local filled=$((current * width / goal))
-  
-  if [ "$filled" -gt "$width" ]; then
-    filled=$width
-  fi
-  
-  local bar=""
-  for i in $(seq 1 $filled); do
-    bar="${bar}█"
-  done
-  for i in $(seq $((filled + 1)) $width); do
-    bar="${bar}░"
-  done
-  
-  if [ "$current" -ge "$goal" ]; then
-    echo -e "\033[92m$bar\033[0m ${percentage}% (${current}/${goal})"
-  elif [ "$percentage" -ge 80 ]; then
-    echo -e "\033[93m$bar\033[0m ${percentage}% (${current}/${goal})"
-  else
-    echo -e "$bar ${percentage}% (${current}/${goal})"
-  fi
-}
-
-# Function to count words for today (columnar format with goal integration)
+# Function to count words for today (columnar format)
 count_today() {
-  load_goals
-  
   echo -e "\033[92mToday ($TODAY):\033[0m"
-  
+  echo -e "\033[94mDATE       TIME   WC   TITLE\033[0m"
+
   total_words=0
   file_count=0
 
@@ -213,19 +170,9 @@ count_today() {
 
   if [ $file_count -eq 0 ]; then
     echo -e "\033[91mNo writing files found for today.\033[0m"
-    if [ "$daily_goal" -gt 0 ]; then
-      echo
-      echo "Daily Goal: $(show_progress 0 "$daily_goal")"
-    fi
   else
     echo
     echo -e "\033[92mTotal: $file_count files, $total_words words\033[0m"
-    if [ "$daily_goal" -gt 0 ]; then
-      echo "Goal Progress: $(show_progress "$total_words" "$daily_goal")"
-      if [ "$total_words" -ge "$daily_goal" ]; then
-        echo -e "\033[92m*** Daily goal achieved! ***\033[0m"
-      fi
-    fi
   fi
   echo
 }

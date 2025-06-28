@@ -75,14 +75,14 @@ COLUMN5_NAME="CONTROL"
 COL1_ITEMS=(
   "M:Markdown:$MCRJRNL/scripts/newMarkDown.sh"
   "V:NeoVim:$EDITOR"
-  "J:Journal::"
+  "J:Journal:$MCRJRNL/scripts/journal-menu.sh"
   "N:Notes:$MCRJRNL/scripts/notes.sh"
-  "O:Outline:$OUTLINER"
+  "O:Outline:$MCRJRNL/scripts/outliner.sh"
 )
 
 # Column 2 Items
 COL2_ITEMS=(
-  "G:Set Goals::"
+  "G:Set Goals:$MCRJRNL/scripts/goals.sh"
   "C:Word Count:$MCRJRNL/scripts/wordcount.sh"
   "E:Explore Notes:$MCRJRNL/scripts/notes-explorer.sh"
   "D:Dashboard::"
@@ -93,7 +93,7 @@ COL2_ITEMS=(
 COL3_ITEMS=(
   "S:Share Files:$MCRJRNL/scripts/share.sh"
   "F:File Manager:$FILE_MANAGER"
-  "B:Backup::"
+  "B:Backup:$MCRJRNL/scripts/backup.sh"
   ":::" # Empty padding line
   ":::" # Empty padding line
 )
@@ -110,7 +110,7 @@ COL4_ITEMS=(
 # Column 5 Items
 COL5_ITEMS=(
   "Z:Z Shell:$SHELL_CMD"
-  "A:About:neofetch"
+  "A:About:$MCRJRNL/scripts/sysinfo.sh"
   "W:Wifi:$MCRJRNL/scripts/network.sh"
   "H:Help:cat $MCRJRNL/README.md"
   "Q:Quit:$MCRJRNL/scripts/quit.sh"

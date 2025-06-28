@@ -5,7 +5,7 @@
 set -e
 
 # Configuration
-DOCS_DIR="$HOME/Documents"
+DOCS_DIR="$HOME/Documents/writing"
 LOREM_CMD="lorem"
 
 # Descriptive suffixes for some files
@@ -17,7 +17,7 @@ if ! command -v "$LOREM_CMD" &> /dev/null; then
     exit 1
 fi
 
-# Ensure Documents directory exists
+# Ensure writing directory exists
 mkdir -p "$DOCS_DIR"
 
 # Function to generate random number in range
