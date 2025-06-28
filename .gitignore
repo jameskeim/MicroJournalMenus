@@ -1,0 +1,24 @@
+CLAUDE.md
+.claude/
+
+# Generated files
+menu_cache
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE files
+.vscode/
+.idea/# Virtual environment
+venv/
+env/
+ENV/
+

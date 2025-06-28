@@ -1,0 +1,800 @@
+<h1 id="micro-journal-2000-system-help">MICRO JOURNAL 2000 System
+Help</h1>
+<p><em>Complete User Guide and Reference Documentation</em></p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<h3 id="system-overview"><a href="#system-overview">System
+Overview</a></h3>
+<ul class="incremental">
+<li><a href="#philosophy-design">Philosophy &amp; Design</a></li>
+<li><a href="#hardware-requirements">Hardware Requirements</a></li>
+<li><a href="#display-optimization">Display Optimization</a></li>
+</ul>
+<h3 id="main-menu-system"><a href="#main-menu-system">Main Menu
+System</a></h3>
+<ul class="incremental">
+<li><a href="#menu-layout">Menu Layout</a></li>
+<li><a href="#navigation-basics">Navigation Basics</a></li>
+<li><a href="#column-organization">Column Organization</a></li>
+</ul>
+<h3 id="draft-column"><a href="#draft-column">DRAFT Column</a></h3>
+<ul class="incremental">
+<li><a href="#markdown-editor">M - Markdown Editor</a></li>
+<li><a href="#neovim">V - NeoVim</a></li>
+<li><a href="#journal-system">J - Journal System</a></li>
+<li><a href="#notes-system">N - Notes System</a></li>
+<li><a href="#outliner">O - Outliner</a></li>
+</ul>
+<h3 id="process-column"><a href="#process-column">PROCESS
+Column</a></h3>
+<ul class="incremental">
+<li><a href="#set-goals">G - Set Goals</a></li>
+<li><a href="#word-count">C - Word Count</a></li>
+<li><a href="#explore-notes">E - Explore Notes</a></li>
+<li><a href="#dashboard">D - Dashboard</a></li>
+</ul>
+<h3 id="share-column"><a href="#share-column">SHARE Column</a></h3>
+<ul class="incremental">
+<li><a href="#share-files">S - Share Files</a></li>
+<li><a href="#file-manager">F - File Manager</a></li>
+<li><a href="#backup">B - Backup</a></li>
+</ul>
+<h3 id="pause-column"><a href="#pause-column">PAUSE Column</a></h3>
+<ul class="incremental">
+<li><a href="#writing-prompts">P - Writing Prompts</a></li>
+<li><a href="#inspirations">I - Inspirations</a></li>
+<li><a href="#keyboarding-practice">K - Keyboarding Practice</a></li>
+<li><a href="#matrix-screensaver">X - Matrix Screensaver</a></li>
+</ul>
+<h3 id="control-column"><a href="#control-column">CONTROL
+Column</a></h3>
+<ul class="incremental">
+<li><a href="#z-shell">Z - Z Shell</a></li>
+<li><a href="#about-system">A - About System</a></li>
+<li><a href="#wifi-management">W - WiFi Management</a></li>
+<li><a href="#help">H - Help</a></li>
+<li><a href="#quit-options">Q - Quit Options</a></li>
+</ul>
+<h3 id="hidden-options"><a href="#hidden-options">Hidden
+Options</a></h3>
+<ul class="incremental">
+<li><a href="#exit-menu">0 - Exit Menu</a></li>
+<li><a href="#reload-menu">1 - Reload Menu</a></li>
+<li><a href="#pi-configuration">2 - Pi Configuration</a></li>
+</ul>
+<h3 id="advanced-topics"><a href="#advanced-topics">Advanced
+Topics</a></h3>
+<ul class="incremental">
+<li><a href="#file-organization">File Organization</a></li>
+<li><a href="#customization">Customization</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#performance-tips">Performance Tips</a></li>
+</ul>
+<hr />
+<h2 id="system-overview">System Overview</h2>
+<h3 id="philosophy-design">Philosophy &amp; Design</h3>
+<p>The MICRO JOURNAL 2000 embodies a philosophy of
+<strong>distraction-free writing</strong> through purposeful design.
+Every element serves the fundamental goal of helping writers focus on
+their craft without technological interference.</p>
+<p><strong>Core Principles:</strong> - <strong>Immediate
+Access</strong>: Power on and start writing within seconds -
+<strong>Visual Excellence</strong>: Beautiful, professional interfaces
+using the <code>gum</code> library - <strong>Resource
+Efficiency</strong>: Optimized for Raspberry Pi Zero 2W’s 512MB RAM -
+<strong>Writer-Centric</strong>: Designed by writers, for writers -
+<strong>Configurable Simplicity</strong>: Powerful features with simple
+interfaces</p>
+<h3 id="hardware-requirements">Hardware Requirements</h3>
+<p><strong>Minimum System:</strong> - Raspberry Pi Zero 2W (512MB RAM) -
+MicroSD card (8GB minimum, 32GB recommended) - Compatible keyboard
+(mechanical preferred) - Display capable of 98×12 character output</p>
+<p><strong>Optimal Setup:</strong> - Fast MicroSD card (Class 10 or
+better) - Mechanical keyboard with good tactile feedback - E-ink or LCD
+display optimized for text - External battery for extended sessions</p>
+<h3 id="display-optimization">Display Optimization</h3>
+<p>The system is optimized for <strong>98 characters × 12 lines</strong>
+displays, ensuring: - Maximum information density - Clean, readable
+layouts - Efficient use of screen real estate - Consistent visual
+hierarchy</p>
+<hr />
+<h2 id="main-menu-system">Main Menu System</h2>
+<h3 id="menu-layout">Menu Layout</h3>
+<p>The main menu organizes all system functions into five logical
+columns:</p>
+<pre><code>MICRO JOURNAL 2000
+┌─────────┬─────────┬─────────┬─────────┬─────────┐
+│  DRAFT  │ PROCESS │  SHARE  │  PAUSE  │ CONTROL │
+├─────────┼─────────┼─────────┼─────────┼─────────┤
+│M Markdown│G Goals  │S Share  │P Prompts│Z Shell  │
+│V NeoVim │C Count  │F Files  │I Inspire│A About  │
+│J Journal│E Explore│B Backup │K Keyboard│W WiFi   │
+│N Notes  │D Dashbrd│         │X Matrix │H Help   │
+│O Outline│         │         │         │Q Quit   │
+└─────────┴─────────┴─────────┴─────────┴─────────┘</code></pre>
+<h3 id="navigation-basics">Navigation Basics</h3>
+<p><strong>Selection Methods:</strong> - Press any highlighted letter to
+select that option - Keys are case-insensitive (M or m both work) -
+Invalid selections show a brief error message</p>
+<p><strong>Special Navigation:</strong> - <code>0</code> - Exit to shell
+(hidden option) - <code>1</code> - Reload menu system (hidden
+option)<br />
+- <code>2</code> - Access Pi configuration (hidden option)</p>
+<h3 id="column-organization">Column Organization</h3>
+<p>Each column represents a different aspect of the writing
+workflow:</p>
+<ul class="incremental">
+<li><strong>DRAFT</strong>: Creating new content</li>
+<li><strong>PROCESS</strong>: Analyzing and organizing existing
+content</li>
+<li><strong>SHARE</strong>: Distributing and backing up work</li>
+<li><strong>PAUSE</strong>: Taking breaks and finding inspiration</li>
+<li><strong>CONTROL</strong>: System management and configuration</li>
+</ul>
+<hr />
+<h2 id="draft-column">DRAFT Column</h2>
+<p><em>Tools for creating new written content</em></p>
+<h3 id="markdown-editor">M - Markdown Editor</h3>
+<p><strong>Purpose</strong>: Quick access to markdown file creation with
+automatic timestamping.</p>
+<p><strong>What It Does:</strong> - Creates new markdown file with
+format: <code>YYYY.MM.DD-HHMM.md</code> - Opens file in NeoVim for
+immediate editing - Saves files to <code>~/Documents/</code>
+directory</p>
+<p><strong>Usage Instructions:</strong> 1. Press <code>M</code> from
+main menu 2. System generates timestamped filename automatically 3.
+NeoVim opens with blank document ready for writing 4. Write your content
+using standard markdown syntax 5. Save with <code>:w</code> and quit
+with <code>:q</code> in NeoVim</p>
+<p><strong>File Naming Convention:</strong> -
+<code>2025.01.15-0930.md</code> - Morning writing session -
+<code>2025.01.15-1430-story-ideas.md</code> - Afternoon session with
+description</p>
+<p><strong>Script Location</strong>:
+<code>~/.microjournal/scripts/newMarkDown.sh</code></p>
+<h3 id="neovim">V - NeoVim</h3>
+<p><strong>Purpose</strong>: Direct access to the NeoVim text editor
+without file creation.</p>
+<p><strong>What It Does:</strong> - Launches NeoVim text editor - Allows
+opening existing files or creating new ones - Full NeoVim functionality
+available</p>
+<p><strong>Usage Instructions:</strong> 1. Press <code>V</code> from
+main menu 2. NeoVim starts in normal mode 3. Use standard NeoVim
+commands: - <code>:e filename</code> - Open existing file -
+<code>:new</code> - Create new buffer - <code>:w filename</code> - Save
+with specific name</p>
+<p><strong>NeoVim Quick Reference:</strong> - <code>i</code> - Insert
+mode - <code>Esc</code> - Normal mode - <code>:w</code> - Save file -
+<code>:q</code> - Quit - <code>:wq</code> - Save and quit</p>
+<h3 id="journal-system">J - Journal System</h3>
+<p><strong>Purpose</strong>: Dedicated personal journaling with
+automatic organization and beautiful reading.</p>
+<p><strong>What It Does:</strong> - Maintains single journal file at
+<code>~/Documents/journal/myjournal.md</code> - Automatically adds
+date/time headers - Supports multiple entries per day - Provides
+beautiful reading mode with <code>glow</code></p>
+<p><strong>Usage Instructions:</strong></p>
+<h4 id="creating-new-entry">Creating New Entry:</h4>
+<ol class="incremental" type="1">
+<li>Press <code>J</code> from main menu</li>
+<li>System adds new header:
+<code>## Monday, January 15, 2025</code></li>
+<li>Adds time entry: <code>### 14:30</code></li>
+<li>Opens editor positioned for immediate writing</li>
+</ol>
+<h4 id="journal-menu-options">Journal Menu Options:</h4>
+<ul class="incremental">
+<li><strong>N) New Entry</strong> - Add timestamped entry (default)</li>
+<li><strong>R) Read (Glow)</strong> - Beautiful formatted reading</li>
+<li><strong>T) Recent Entries</strong> - Show last few entries</li>
+<li><strong>S) Search</strong> - Find content in journal</li>
+<li><strong>O) Open Editor</strong> - Edit without new entry</li>
+<li><strong>C) Check Structure</strong> - Validate journal format</li>
+</ul>
+<h4 id="journal-structure">Journal Structure:</h4>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># My Personal Journal</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">## Monday, January 15, 2025</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">### 09:30</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>Morning thoughts and reflections...</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">### 15:45</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>Afternoon insights...</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="fu">## Sunday, January 14, 2025</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="fu">### 20:15</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>Evening reflections...</span></code></pre></div>
+<p><strong>Reading Mode Features:</strong> - Formatted display with
+proper typography - Hierarchical header styling - Pagination for long
+journals - Search functionality within reader</p>
+<p><strong>Script Location</strong>:
+<code>~/.microjournal/scripts/journal.sh</code></p>
+<h3 id="notes-system">N - Notes System</h3>
+<p><strong>Purpose</strong>: Powerful knowledge management with
+wiki-style linking and templates.</p>
+<p><strong>What It Does:</strong> - Creates interconnected notes with
+[[wiki links]] - Supports templates for structured content - Provides
+fast search and discovery - Terminal Velocity-style instant access</p>
+<p><strong>Usage Instructions:</strong></p>
+<h4 id="creating-notes">Creating Notes:</h4>
+<ol class="incremental" type="1">
+<li>Press <code>N</code> from main menu</li>
+<li>If <code>fzf</code> available: Instant search/create interface</li>
+<li>If not available: Simple menu-driven creation</li>
+<li>Type note name or search existing notes</li>
+<li>New notes auto-created with proper headers</li>
+</ol>
+<h4 id="note-features">Note Features:</h4>
+<ul class="incremental">
+<li><strong>Wiki Links</strong>: <code>[[Note Name]]</code> creates
+automatic connections</li>
+<li><strong>Templates</strong>: Character, plot, scene, worldbuilding
+templates</li>
+<li><strong>Hashtags</strong>: <code>#writing #ideas</code> for
+categorization</li>
+<li><strong>Search</strong>: Full-text search across all notes</li>
+</ul>
+<h4 id="advanced-commands">Advanced Commands:</h4>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">notes.sh</span> grep <span class="st">&quot;search term&quot;</span>     <span class="co"># Search content</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">notes.sh</span> tags                   <span class="co"># List all hashtags</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">notes.sh</span> links <span class="st">&quot;note name&quot;</span>      <span class="co"># Show connections</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">notes.sh</span> mv <span class="st">&quot;old&quot;</span> <span class="st">&quot;new&quot;</span>         <span class="co"># Rename notes</span></span></code></pre></div>
+<p><strong>Storage</strong>: <code>~/Documents/notes/</code>
+<strong>Templates</strong>: <code>~/.microjournal/templates/</code>
+<strong>Script Location</strong>:
+<code>~/.microjournal/scripts/notes.sh</code></p>
+<h3 id="outliner">O - Outliner</h3>
+<p><strong>Purpose</strong>: Hierarchical note organization using HNB
+(Hierarchical Notebook).</p>
+<p><strong>What It Does:</strong> - Creates structured, tree-based
+documents - Supports collapsible sections - Ideal for project planning
+and organization - Exports to various formats</p>
+<p><strong>Usage Instructions:</strong> 1. Press <code>O</code> from
+main menu 2. HNB outliner launches 3. Use arrow keys to navigate 4.
+<code>Tab</code> to indent, <code>Shift+Tab</code> to outdent 5.
+<code>Enter</code> to create new items</p>
+<p><strong>HNB Quick Commands:</strong> - <code>F2</code> - Save -
+<code>F3</code> - Load file - <code>F10</code> - Exit -
+<code>Insert</code> - Add new node - <code>Delete</code> - Remove
+node</p>
+<p><strong>Note</strong>: Requires HNB to be installed
+(<code>sudo apt install hnb</code>)</p>
+<hr />
+<h2 id="process-column">PROCESS Column</h2>
+<p><em>Tools for analyzing and organizing your writing</em></p>
+<h3 id="set-goals">G - Set Goals</h3>
+<p><strong>Purpose</strong>: Writing goal management and progress
+tracking.</p>
+<p><strong>What It Does:</strong> - Set daily and weekly word count
+targets - Track writing streaks and consistency - Provide motivational
+feedback and encouragement - Integrate with word count analytics</p>
+<p><strong>Usage Instructions:</strong> 1. Press <code>G</code> from
+main menu 2. Set daily word count goal (e.g., 500 words) 3. Set weekly
+targets for sustained progress 4. System tracks progress automatically
+5. View encouragement and streak information</p>
+<p><strong>Goal Types:</strong> - <strong>Daily Goals</strong>: Target
+words per day - <strong>Weekly Goals</strong>: Sustained writing targets
+- <strong>Streak Goals</strong>: Consecutive writing days -
+<strong>Project Goals</strong>: Longer-term objectives</p>
+<p><strong>Progress Display:</strong></p>
+<pre><code>Daily Goal: ████████░░ 80% (400/500 words)
+Weekly: 2,847/3,500 words
+Streak: 🔥 Day 7 of consistent writing</code></pre>
+<p><strong>Script Integration</strong>: Works with
+<code>wordcount.sh</code> and stores config in
+<code>~/.microjournal/config</code></p>
+<h3 id="word-count">C - Word Count</h3>
+<p><strong>Purpose</strong>: Comprehensive writing analytics and
+progress tracking.</p>
+<p><strong>What It Does:</strong> - Analyzes individual files with
+detailed metrics - Tracks daily writing progress with session breakdown
+- Shows recent writing activity and trends - Provides readability
+analysis and writing insights</p>
+<p><strong>Usage Instructions:</strong></p>
+<h4 id="main-menu-options">Main Menu Options:</h4>
+<ul class="incremental">
+<li><strong>T) Today’s Writing</strong> - Current day’s progress</li>
+<li><strong>R) Recent Files</strong> - Last 5 files with analytics</li>
+<li><strong>F) Specific File</strong> - Detailed analysis of chosen
+file</li>
+<li><strong>A) All Files</strong> - Complete corpus overview</li>
+</ul>
+<h4 id="todays-writing-display">Today’s Writing Display:</h4>
+<pre><code>Today (2025.01.15):
+DATE       TIME   WC   TITLE
+2025.01.15 09:30  0247 morning-writing
+2025.01.15 16:45  0156 evening-notes
+
+Total: 2 files, 403 words</code></pre>
+<h4 id="file-analysis-features">File Analysis Features:</h4>
+<ul class="incremental">
+<li>Word, character, line, paragraph counts</li>
+<li>Reading time estimation</li>
+<li>Flesch readability score</li>
+<li>Vocabulary diversity analysis</li>
+<li>Most common words (excluding stop words)</li>
+</ul>
+<h4 id="recent-files-tracking">Recent Files Tracking:</h4>
+<ul class="incremental">
+<li>Chronological display of last 5 modified files</li>
+<li>Quick overview of writing patterns</li>
+<li>Session analysis and productivity trends</li>
+</ul>
+<p><strong>Script Location</strong>:
+<code>~/.microjournal/scripts/wordcount.sh</code></p>
+<h3 id="explore-notes">E - Explore Notes</h3>
+<p><strong>Purpose</strong>: Advanced note discovery and knowledge
+management.</p>
+<p><strong>What It Does:</strong> - Browse notes by tags and categories
+- Explore wiki-link connections between notes - Search across note
+content with context - Find orphaned notes without connections -
+Generate note statistics and insights</p>
+<p><strong>Usage Instructions:</strong></p>
+<h4 id="exploration-menu">Exploration Menu:</h4>
+<ul class="incremental">
+<li><strong>T) Browse Tags</strong> - Interactive tag selection with
+<code>fzf</code></li>
+<li><strong>L) Link Explorer</strong> - Discover note connections</li>
+<li><strong>S) Search Content</strong> - Full-text search with
+context</li>
+<li><strong>O) Orphan Notes</strong> - Find unconnected notes</li>
+<li><strong>N) Note Statistics</strong> - Corpus analytics</li>
+</ul>
+<h4 id="tag-browsing">Tag Browsing:</h4>
+<ol class="incremental" type="1">
+<li>Press <code>T</code> to browse tags</li>
+<li><code>fzf</code> interface shows all hashtags</li>
+<li>Select tag to see related notes</li>
+<li>Preview shows note connections</li>
+</ol>
+<h4 id="link-explorer">Link Explorer:</h4>
+<ol class="incremental" type="1">
+<li>Press <code>L</code> for link exploration</li>
+<li>Select note file with <code>fzf</code></li>
+<li>View all outgoing [[wiki links]]</li>
+<li>See incoming backlinks from other notes</li>
+</ol>
+<h4 id="search-features">Search Features:</h4>
+<ul class="incremental">
+<li>Context-aware search results</li>
+<li>Multiple file result selection</li>
+<li>Preview of matching content</li>
+<li>Highlighting of search terms</li>
+</ul>
+<p><strong>Script Location</strong>:
+<code>~/.microjournal/scripts/notes-explorer.sh</code></p>
+<h3 id="dashboard">D - Dashboard</h3>
+<p><strong>Purpose</strong>: Centralized overview of writing activity
+and system status.</p>
+<p><strong>Current Status</strong>: Placeholder for future
+development.</p>
+<p><strong>Planned Features:</strong> - Unified view of goals, progress,
+and recent activity - Writing streak status and motivation - System
+health and performance metrics - Quick access to most-used functions</p>
+<p><strong>Implementation Note</strong>: This option currently needs
+definition. Consider what dashboard features would be most valuable for
+your writing workflow.</p>
+<hr />
+<h2 id="share-column">SHARE Column</h2>
+<p><em>Tools for distributing and backing up your work</em></p>
+<h3 id="share-files">S - Share Files</h3>
+<p><strong>Purpose</strong>: Easy file sharing and transfer via web
+interface.</p>
+<p><strong>What It Does:</strong> - Starts NetworkManager service for
+connectivity - Launches web-based file browser on port 8080 - Provides
+browser access to <code>~/Documents</code> folder - Allows file
+download, upload, and management</p>
+<p><strong>Usage Instructions:</strong> 1. Press <code>S</code> from
+main menu 2. System starts network services 3. Web interface launches at
+<code>http://[IP_ADDRESS]:8080</code> 4. Access displayed IP address
+from another device 5. Browse and download files through web interface
+6. Press <code>Ctrl+C</code> to stop sharing and disable network</p>
+<p><strong>Security Notes:</strong> - Network access is temporary (only
+while sharing) - No authentication required (use on trusted networks) -
+Automatically disables networking when finished</p>
+<p><strong>Web Interface Features:</strong> - File browsing and
+navigation - Download individual files or folders - Upload files from
+other devices - Basic file management operations</p>
+<p><strong>Script Location</strong>:
+<code>~/.microjournal/scripts/share.sh</code></p>
+<h3 id="file-manager">F - File Manager</h3>
+<p><strong>Purpose</strong>: Terminal-based file management and
+organization.</p>
+<p><strong>What It Does:</strong> - Launches configured file manager
+(default: Yazi) - Browse and organize documents - Move, copy, delete,
+and rename files - Preview file contents</p>
+<p><strong>Usage Instructions:</strong> 1. Press <code>F</code> from
+main menu 2. File manager opens in <code>~/Documents</code> directory 3.
+Use arrow keys to navigate 4. <code>Enter</code> to open files/folders
+5. <code>q</code> to quit file manager</p>
+<p><strong>Default File Manager (Yazi):</strong> - Modern terminal file
+manager - Vi-style key bindings - File preview and syntax highlighting -
+Bulk operations support</p>
+<p><strong>Fallback</strong>: If Yazi not installed, falls back to
+<code>ls -la</code> directory listing.</p>
+<h3 id="backup">B - Backup</h3>
+<p><strong>Purpose</strong>: Data backup and archive management.</p>
+<p><strong>Current Status</strong>: Placeholder for future
+implementation.</p>
+<p><strong>Planned Features:</strong> - Automated document backup to
+external storage - Version control integration - Cloud backup
+configuration - Archive management for old documents</p>
+<hr />
+<h2 id="pause-column">PAUSE Column</h2>
+<p><em>Tools for inspiration and mental breaks</em></p>
+<h3 id="writing-prompts">P - Writing Prompts</h3>
+<p><strong>Purpose</strong>: Creative writing inspiration and idea
+generation.</p>
+<p><strong>What It Does:</strong> - Displays random writing prompts from
+built-in library - Allows adding custom prompts - Browse all available
+prompts - Statistics on prompt usage</p>
+<p><strong>Usage Instructions:</strong></p>
+<h4 id="main-menu">Main Menu:</h4>
+<ul class="incremental">
+<li><strong>R) Random Prompt</strong> - Show inspiring writing
+prompt</li>
+<li><strong>A) Add Prompt</strong> - Contribute custom prompts</li>
+<li><strong>B) Browse All</strong> - Paginated view of all prompts</li>
+<li><strong>S) Statistics</strong> - Usage stats and system info</li>
+</ul>
+<h4 id="using-random-prompts">Using Random Prompts:</h4>
+<ol class="incremental" type="1">
+<li>Press <code>P</code> from main menu, then <code>R</code></li>
+<li>System displays creative writing prompt</li>
+<li>Use prompt for immediate writing or later inspiration</li>
+<li>Press any key for another prompt or <code>Q</code> to return</li>
+</ol>
+<h4 id="adding-custom-prompts">Adding Custom Prompts:</h4>
+<ol class="incremental" type="1">
+<li>Select <code>A) Add Prompt</code></li>
+<li>Enter your writing prompt idea</li>
+<li>Prompt saved to personal collection</li>
+<li>Available in future random selections</li>
+</ol>
+<h4 id="built-in-prompt-examples">Built-in Prompt Examples:</h4>
+<ul class="incremental">
+<li>“Write about a color that doesn’t exist yet.”</li>
+<li>“Describe your morning routine from your coffee mug’s
+perspective.”</li>
+<li>“A character finds a door in their house that wasn’t there
+yesterday.”</li>
+</ul>
+<p><strong>Storage</strong>: Custom prompts in
+<code>~/.microjournal/prompts/custom.txt</code> <strong>Script
+Location</strong>: <code>~/.microjournal/scripts/prompts.sh</code></p>
+<h3 id="inspirations">I - Inspirations</h3>
+<p><strong>Purpose</strong>: Literary quotations and inspirational text
+display.</p>
+<p><strong>What It Does:</strong> - Shows random inspirational quotes
+from literature and art - Centered, beautiful display using
+<code>gum</code> styling - Continuous browsing for extended inspiration
+sessions</p>
+<p><strong>Usage Instructions:</strong> 1. Press <code>I</code> from
+main menu 2. Random quotation appears centered on screen 3. Press any
+key for another quote 4. Press <code>Q</code> to return to main menu</p>
+<p><strong>Quote Sources:</strong> - Fortune database (art and
+literature collections) - Under 400 characters for display optimization
+- Curated for writing inspiration and motivation</p>
+<p><strong>Display Features:</strong> - Centered text for optimal
+reading - Soft color highlighting - Clean, distraction-free
+presentation</p>
+<p><strong>Requirements</strong>: Requires <code>fortune</code> command
+(<code>sudo apt install fortune-mod</code>) <strong>Script
+Location</strong>:
+<code>~/.microjournal/scripts/inspirations.sh</code></p>
+<h3 id="keyboarding-practice">K - Keyboarding Practice</h3>
+<p><strong>Purpose</strong>: Typing practice and keyboard skill
+development.</p>
+<p><strong>What It Does:</strong> - Launches typing tutor for skill
+improvement - Practice typing accuracy and speed - Maintain muscle
+memory for mechanical keyboards</p>
+<p><strong>Usage Instructions:</strong> 1. Press <code>K</code> from
+main menu 2. Typing tutor launches (default: <code>tt</code>) 3. Follow
+on-screen instructions for exercises 4. Exit tutor to return to main
+menu</p>
+<p><strong>Default Tutor</strong>: TT (Terminal Typing)
+<strong>Fallback</strong>: Message if typing tutor not installed
+<strong>Installation</strong>: <code>sudo apt install tt</code> or
+similar typing software</p>
+<h3 id="matrix-screensaver">X - Matrix Screensaver</h3>
+<p><strong>Purpose</strong>: Visual break with Matrix-style
+animation.</p>
+<p><strong>What It Does:</strong> - Displays Matrix-style falling
+character animation - Cyan color scheme for retro aesthetic - Continuous
+animation until keypress</p>
+<p><strong>Usage Instructions:</strong> 1. Press <code>X</code> from
+main menu 2. Matrix animation begins 3. Press any key to return to
+menu</p>
+<p><strong>Visual Features:</strong> - Cyan character rain animation -
+Full-screen coverage - Smooth scrolling effects</p>
+<p><strong>Requirements</strong>: Requires <code>cmatrix</code> command
+(<code>sudo apt install cmatrix</code>)</p>
+<hr />
+<h2 id="control-column">CONTROL Column</h2>
+<p><em>System management and configuration tools</em></p>
+<h3 id="z-shell">Z - Z Shell</h3>
+<p><strong>Purpose</strong>: Direct access to command line
+interface.</p>
+<p><strong>What It Does:</strong> - Launches configured shell (default:
+Zsh) - Provides full system access for advanced users - Maintains
+virtual environment if active</p>
+<p><strong>Usage Instructions:</strong> 1. Press <code>Z</code> from
+main menu 2. Shell prompt appears 3. Execute any system commands 4. Type
+<code>exit</code> to return to menu</p>
+<p><strong>Shell Features:</strong> - Full Zsh functionality with
+configuration - Access to all system tools - Virtual environment
+preserved - History and aliases available</p>
+<p><strong>Fallback</strong>: Falls back to Bash if Zsh not
+available</p>
+<h3 id="about-system">A - About System</h3>
+<p><strong>Purpose</strong>: System information and hardware
+details.</p>
+<p><strong>What It Does:</strong> - Displays comprehensive system
+information using Neofetch - Shows hardware specifications - Operating
+system details - Resource usage and performance metrics</p>
+<p><strong>Usage Instructions:</strong> 1. Press <code>A</code> from
+main menu 2. Neofetch displays system information 3. Press any key to
+return to menu</p>
+<p><strong>Information Displayed:</strong> - Operating system and kernel
+version - Hardware model and specifications - Memory and storage usage -
+Uptime and performance metrics - ASCII art logo</p>
+<p><strong>Requirements</strong>: Requires <code>neofetch</code>
+(<code>sudo apt install neofetch</code>)</p>
+<h3 id="wifi-management">W - WiFi Management</h3>
+<p><strong>Purpose</strong>: Network connectivity management with
+security awareness.</p>
+<p><strong>What It Does:</strong> - Enable/disable WiFi and SSH services
+- Check network connectivity status - Security warnings for SSH users -
+Service status monitoring</p>
+<p><strong>Usage Instructions:</strong></p>
+<h4 id="network-menu-options">Network Menu Options:</h4>
+<ul class="incremental">
+<li><strong>Enable Networking</strong> - Start WiFi and SSH
+services</li>
+<li><strong>Disable Networking</strong> - Stop all network
+services<br />
+</li>
+<li><strong>Check Status</strong> - View service status and
+connectivity</li>
+<li><strong>Exit</strong> - Return to main menu</li>
+</ul>
+<h4 id="enabling-network">Enabling Network:</h4>
+<ol class="incremental" type="1">
+<li>Press <code>W</code> from main menu</li>
+<li>Select “Enable Networking”</li>
+<li>NetworkManager and SSH services start</li>
+<li>System shows success/failure status</li>
+</ol>
+<h4 id="disabling-network">Disabling Network:</h4>
+<ol class="incremental" type="1">
+<li>Select “Disable Networking”</li>
+<li><strong>Warning displayed for SSH users</strong></li>
+<li>Confirm action to proceed</li>
+<li>Services stop, network disconnected</li>
+</ol>
+<h4 id="status-display">Status Display:</h4>
+<pre><code>Current Status: Online ✓
+NetworkManager: Active ✓
+SSH Service: Active ✓
+Internet connectivity: Available ✓</code></pre>
+<p><strong>Security Features:</strong> - SSH disconnect warning for
+remote users - Confirmation required for network disable - Clear status
+indicators - Service dependency handling</p>
+<p><strong>Script Location</strong>:
+<code>~/.microjournal/scripts/network.sh</code></p>
+<h3 id="help">H - Help</h3>
+<p><strong>Purpose</strong>: Access system documentation and README.</p>
+<p><strong>What It Does:</strong> - Displays main system README file -
+Provides usage instructions and tips - Documents key features and
+configuration</p>
+<p><strong>Usage Instructions:</strong> 1. Press <code>H</code> from
+main menu 2. README content displays in pager 3. Use arrow keys or page
+up/down to navigate 4. Press <code>q</code> to exit help</p>
+<p><strong>Help Content Includes:</strong> - Basic system overview - Key
+feature explanations - Configuration instructions - Troubleshooting
+tips</p>
+<p><strong>Source</strong>: Displays
+<code>~/.microjournal/README.md</code></p>
+<h3 id="quit-options">Q - Quit Options</h3>
+<p><strong>Purpose</strong>: Safe system shutdown and restart
+options.</p>
+<p><strong>What It Does:</strong> - Provides safe shutdown and reboot
+options - Includes confirmation prompts for safety - Syncs filesystem
+before power operations</p>
+<p><strong>Usage Instructions:</strong></p>
+<h4 id="quit-menu-options">Quit Menu Options:</h4>
+<ul class="incremental">
+<li><strong>S) Shutdown System</strong> - Complete power off</li>
+<li><strong>R) Reboot System</strong> - Restart system</li>
+<li><strong>[Invalid Choice]</strong> - Return to main menu</li>
+</ul>
+<h4 id="shutdown-process">Shutdown Process:</h4>
+<ol class="incremental" type="1">
+<li>Press <code>Q</code> from main menu, then <code>S</code></li>
+<li>Warning about system shutdown displayed</li>
+<li>Confirmation prompt: “Are you sure?”</li>
+<li>If confirmed: filesystem sync, then shutdown</li>
+<li>If cancelled: return to main menu</li>
+</ol>
+<h4 id="reboot-process">Reboot Process:</h4>
+<ol class="incremental" type="1">
+<li>Press <code>Q</code> from main menu, then <code>R</code></li>
+<li>Warning about system restart displayed</li>
+<li>Confirmation prompt required</li>
+<li>If confirmed: filesystem sync, then reboot</li>
+</ol>
+<p><strong>Safety Features:</strong> - Confirmation required for all
+power operations - Filesystem sync before shutdown/reboot - Clear
+warnings about operation consequences - Cancellation option at
+confirmation stage</p>
+<p><strong>Script Location</strong>:
+<code>~/.microjournal/scripts/quit.sh</code></p>
+<hr />
+<h2 id="hidden-options">Hidden Options</h2>
+<p><em>Special functions not displayed in main menu</em></p>
+<h3 id="exit-menu">0 - Exit Menu</h3>
+<p><strong>Purpose</strong>: Quick exit to shell without shutdown.</p>
+<p><strong>What It Does:</strong> - Immediately exits menu system -
+Returns to shell prompt - Preserves all running services</p>
+<p><strong>Usage</strong>: Press <code>0</code> from main menu (not
+displayed)</p>
+<h3 id="reload-menu">1 - Reload Menu</h3>
+<p><strong>Purpose</strong>: Refresh menu system and reload
+configuration.</p>
+<p><strong>What It Does:</strong> - Clears menu cache - Reloads menu
+script with latest changes - Useful for development and
+troubleshooting</p>
+<p><strong>Usage</strong>: Press <code>1</code> from main menu (not
+displayed)</p>
+<h3 id="pi-configuration">2 - Pi Configuration</h3>
+<p><strong>Purpose</strong>: Access Raspberry Pi system
+configuration.</p>
+<p><strong>What It Does:</strong> - Temporarily starts NetworkManager -
+Launches <code>raspi-config</code> system tool - Stops NetworkManager
+after configuration</p>
+<p><strong>Usage</strong>: Press <code>2</code> from main menu (not
+displayed)</p>
+<p><strong>Configuration Options Available:</strong> - Display settings
+- Interface options (SSH, SPI, I2C, etc.) - Performance settings -
+Localization options - User password changes</p>
+<p><strong>Script Location</strong>:
+<code>~/.microjournal/scripts/config.sh</code></p>
+<hr />
+<h2 id="advanced-topics">Advanced Topics</h2>
+<h3 id="file-organization">File Organization</h3>
+<h4 id="directory-structure">Directory Structure:</h4>
+<pre><code>~/
+├── Documents/
+│   ├── *.md                    # Timestamped writing files
+│   ├── journal/
+│   │   └── myjournal.md       # Personal journal
+│   └── notes/
+│       ├── *.md               # Wiki-linked notes
+│       └── [note files]
+├── .microjournal/
+│   ├── scripts/               # System scripts
+│   ├── templates/             # Note templates
+│   ├── prompts/               # Writing prompts
+│   ├── config                 # System configuration
+│   └── menu_cache            # Menu display cache</code></pre>
+<h4 id="file-naming-conventions">File Naming Conventions:</h4>
+<p><strong>Writing Files</strong>:
+<code>YYYY.MM.DD-HHMM[-description].md</code> -
+<code>2025.01.15-0930.md</code> - Morning session -
+<code>2025.01.15-1430-story-ideas.md</code> - Afternoon with
+description</p>
+<p><strong>Notes</strong>: <code>topic-name.md</code> or
+<code>topic_name_TYPE.md</code> - <code>character-notes.md</code> -
+General character notes - <code>protagonist_CHARACTER.md</code> -
+Template-based character - <code>world-building_WORLDBUILDING.md</code>
+- Template-based world</p>
+<h3 id="customization">Customization</h3>
+<h4 id="menu-configuration">Menu Configuration:</h4>
+<p>Edit <code>~/.microjournal/scripts/menu</code> to customize:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Column names</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="va">COLUMN1_NAME</span><span class="op">=</span><span class="st">&quot;DRAFT&quot;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="va">COLUMN2_NAME</span><span class="op">=</span><span class="st">&quot;PROCESS&quot;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Menu items (format: &quot;KEY:Display Name:Command&quot;)</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="va">COL1_ITEMS</span><span class="op">=</span><span class="va">(</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;M:Markdown:</span><span class="va">$MCRJRNL</span><span class="st">/scripts/newMarkDown.sh&quot;</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;V:NeoVim:</span><span class="va">$EDITOR</span><span class="st">&quot;</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="va">)</span></span></code></pre></div>
+<h4 id="environment-variables">Environment Variables:</h4>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="va">EDITOR</span><span class="op">=</span><span class="st">&quot;nvim&quot;</span>              <span class="co"># Default text editor</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="va">FILE_MANAGER</span><span class="op">=</span><span class="st">&quot;yazi&quot;</span>        <span class="co"># File manager command</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="va">SHELL_CMD</span><span class="op">=</span><span class="st">&quot;/bin/zsh&quot;</span>       <span class="co"># Shell for Z option</span></span></code></pre></div>
+<h4 id="adding-custom-scripts">Adding Custom Scripts:</h4>
+<ol class="incremental" type="1">
+<li>Create script in <code>~/.microjournal/scripts/</code></li>
+<li>Make executable: <code>chmod +x script-name.sh</code></li>
+<li>Add to menu configuration</li>
+<li>Reload menu with <code>1</code> key</li>
+</ol>
+<h3 id="troubleshooting">Troubleshooting</h3>
+<h4 id="common-issues">Common Issues:</h4>
+<p><strong>Menu Won’t Load:</strong> - Check <code>gum</code>
+installation: <code>sudo apt install gum</code> - Verify script
+permissions: <code>chmod +x ~/.microjournal/scripts/menu</code> - Reload
+menu cache with <code>1</code> key</p>
+<p><strong>Scripts Fail to Execute:</strong> - Verify file permissions:
+<code>chmod +x ~/.microjournal/scripts/*.sh</code> - Check command
+dependencies (fzf, glow, neofetch, etc.) - Review error messages in
+terminal</p>
+<p><strong>Network Issues:</strong> - Ensure WiFi module is functioning
+- Check NetworkManager service status - Verify 2.4GHz network
+availability (5GHz not supported)</p>
+<p><strong>Performance Issues:</strong> - Clear menu cache:
+<code>rm ~/.microjournal/menu_cache</code> - Check available memory:
+<code>free -h</code> - Restart system if necessary</p>
+<h4 id="log-locations">Log Locations:</h4>
+<ul class="incremental">
+<li>System logs: <code>/var/log/syslog</code></li>
+<li>Service logs: <code>journalctl -u service-name</code></li>
+<li>Script errors: Check terminal output</li>
+</ul>
+<h3 id="performance-tips">Performance Tips</h3>
+<h4 id="memory-optimization">Memory Optimization:</h4>
+<ul class="incremental">
+<li>Menu system uses cached rendering for speed</li>
+<li>Scripts are bash-based to minimize memory usage</li>
+<li>Text editors are lightweight (NeoVim, WordGrinder)</li>
+</ul>
+<h4 id="storage-management">Storage Management:</h4>
+<ul class="incremental">
+<li>Regular cleanup of temporary files</li>
+<li>Archive old writing files periodically</li>
+<li>Monitor SD card health and performance</li>
+</ul>
+<h4 id="network-efficiency">Network Efficiency:</h4>
+<ul class="incremental">
+<li>Disable networking when not needed</li>
+<li>Use local file operations when possible</li>
+<li>Minimize background network services</li>
+</ul>
+<h4 id="writing-optimization">Writing Optimization:</h4>
+<ul class="incremental">
+<li>Use markdown for fast rendering</li>
+<li>Keep individual files under 10,000 words</li>
+<li>Organize notes with clear naming conventions</li>
+</ul>
+<hr />
+<h2 id="quick-reference">Quick Reference</h2>
+<h3 id="essential-key-bindings">Essential Key Bindings:</h3>
+<ul class="incremental">
+<li><code>M</code> - New markdown file</li>
+<li><code>J</code> - Journal entry</li>
+<li><code>N</code> - Notes system</li>
+<li><code>C</code> - Word count</li>
+<li><code>S</code> - Share files</li>
+<li><code>Q</code> - Shutdown options</li>
+<li><code>0</code> - Exit to shell</li>
+<li><code>1</code> - Reload menu</li>
+</ul>
+<h3 id="file-locations">File Locations:</h3>
+<ul class="incremental">
+<li>Writing files: <code>~/Documents/</code></li>
+<li>Journal: <code>~/Documents/journal/myjournal.md</code></li>
+<li>Notes: <code>~/Documents/notes/</code></li>
+<li>System: <code>~/.microjournal/</code></li>
+</ul>
+<h3 id="emergency-commands">Emergency Commands:</h3>
+<ul class="incremental">
+<li><code>Ctrl+C</code> - Cancel current operation</li>
+<li><code>0</code> then <code>exit</code> - Return to menu from
+shell</li>
+<li><code>sudo reboot</code> - Force restart if system hangs</li>
+</ul>
+<hr />
+<p><em>This documentation covers MICRO JOURNAL 2000 system version as of
+January 2025. For updates and additional information, visit the project
+repository or use the <code>H</code> help option from the main
+menu.</em></p>

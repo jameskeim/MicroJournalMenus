@@ -65,7 +65,7 @@ check_command_availability
 # ============================================================================
 
 # Column Names (these appear as headers above each column)
-COLUMN1_NAME="DRAFT"
+COLUMN1_NAME="CREATE"
 COLUMN2_NAME="PROCESS"
 COLUMN3_NAME="SHARE"
 COLUMN4_NAME="PAUSE"
@@ -73,7 +73,7 @@ COLUMN5_NAME="CONTROL"
 
 # Column 1 Items
 COL1_ITEMS=(
-  "M:Markdown:$MCRJRNL/scripts/newMarkDown.sh"
+  "D:Draft:$MCRJRNL/scripts/newMarkDown-enhanced.sh"
   "V:NeoVim:$EDITOR"
   "J:Journal:$MCRJRNL/scripts/journal-menu.sh"
   "N:Notes:$MCRJRNL/scripts/notes.sh"
@@ -82,10 +82,10 @@ COL1_ITEMS=(
 
 # Column 2 Items
 COL2_ITEMS=(
-  "G:Set Goals:$MCRJRNL/scripts/goals.sh"
-  "C:Word Count:$MCRJRNL/scripts/wordcount.sh"
+  "G:Set Goals:$MCRJRNL/scripts/goals-enhanced.sh"
+  "C:Word Count:$MCRJRNL/scripts/wordcount-enhanced.sh"
   "E:Explore Notes:$MCRJRNL/scripts/notes-explorer.sh"
-  "D:Dashboard::"
+  ":::" # Empty padding line
   ":::" # Empty padding line
 )
 
@@ -112,7 +112,7 @@ COL5_ITEMS=(
   "Z:Z Shell:$SHELL_CMD"
   "A:About:$MCRJRNL/scripts/sysinfo.sh"
   "W:Wifi:$MCRJRNL/scripts/network.sh"
-  "H:Help:cat $MCRJRNL/README.md"
+  "H:Help:lynx $MCRJRNL/systemhelp.html"
   "Q:Quit:$MCRJRNL/scripts/quit.sh"
 )
 
@@ -276,7 +276,7 @@ execute_selection() {
           echo "Press any key to continue..."
           read -n 1 -s
         fi
-        
+
         # Basic cleanup only
         clear
       fi
