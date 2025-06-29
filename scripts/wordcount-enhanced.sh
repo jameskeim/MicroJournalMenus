@@ -2,6 +2,9 @@
 # wordcount-enhanced.sh - Cache-Enhanced Word Count Tool for MICRO JOURNAL 2000
 # Performance-optimized version using analytics cache system
 
+# Load standardized color system
+source "${MCRJRNL:-$HOME/.microjournal}/scripts/colors.sh"
+
 export FZF_DEFAULT_COMMAND="fd --type f"
 
 # Configuration
@@ -90,7 +93,7 @@ count_today() {
                 local title=$(extract_title_from_filename "$filename")
                 
                 # Format display
-                printf "\033[96m%s\033[0m \033[93m%4d\033[0m  %s\n" "$time" "$word_count" "$title"
+                printf "${COLOR_TIME}%s${COLOR_RESET} ${COLOR_WORDCOUNT}%4d${COLOR_RESET}  %s\n" "$time" "$word_count" "$title"
                 
                 total_words=$((total_words + word_count))
                 file_count=$((file_count + 1))
@@ -661,24 +664,19 @@ init_analytics_cache
 # Main menu loop
 while true; do
     clear
-    echo
     
-    # Header with cache status indicator
+    # Header with cache status indicator (secondary script pattern)
     if is_cache_valid; then
-        center_text "\033[91m▐▀▀▀▀▀▀▀▀▀\033[96m WORD COUNT \033[91m▀▀▀▀▀▀▀▀▀▌\033[0m \033[92m*\033[0m"
+        echo -e "${COLOR_HEADER_PRIMARY}▐ WORD COUNT ▌${COLOR_RESET} ${COLOR_CACHE_ENABLED}●${COLOR_RESET}"
     else
-        center_text "\033[91m▐▀▀▀▀▀▀▀▀▀\033[96m WORD COUNT \033[91m▀▀▀▀▀▀▀▀▀▌\033[0m \033[93m!\033[0m"
+        echo -e "${COLOR_HEADER_PRIMARY}▐ WORD COUNT ▌${COLOR_RESET} ${COLOR_CACHE_DISABLED}●${COLOR_RESET}"
     fi
-    center_text "\033[91m▐▄▄▄\033[0m \033[93mWriting Analytics Tools\033[0m \033[91m▄▄▄▌\033[0m"
-    echo
     
-    center_text "\033[92mT\033[0m - Today's Writing    \033[92mF\033[0m - Specific File"
-    center_text "\033[92mR\033[0m - Recent Files       \033[92mA\033[0m - All Files    "
-    echo
-    center_text "\033[91mE\033[0m - Exit to Main Menu"
-    echo
-    printf "%*s" $((($(get_terminal_width) - 18) / 2)) ""
-    echo -n -e "\033[96mMake a selection: \033[0m"
+    # Menu options (left-aligned, space-efficient)
+    echo -e "${COLOR_HOTKEY}[T]${COLOR_RESET}oday's Writing  ${COLOR_HOTKEY}[F]${COLOR_RESET}ile Analysis"
+    echo -e "${COLOR_HOTKEY}[R]${COLOR_RESET}ecent Files     ${COLOR_HOTKEY}[A]${COLOR_RESET}ll Files"
+    echo -e "${COLOR_HOTKEY}[Q]${COLOR_RESET}uit"
+    echo -n "${COLOR_PROMPT}Selection: ${COLOR_RESET}"
     
     choice=$(get_single_key | tr '[:upper:]' '[:lower:]')
     
@@ -729,7 +727,7 @@ while true; do
     'a')
         count_all
         ;;
-    'e')
+    'q')
         break
         ;;
     *)

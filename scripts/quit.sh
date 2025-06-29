@@ -5,10 +5,13 @@
 # Use portable installation directory
 MCRJRNL="${MCRJRNL:-$HOME/.microjournal}"
 
+# Load standardized gum styling
+source "$MCRJRNL/scripts/gum-styles.sh"
+
 clear
 echo
-gum style --foreground 81 --bold "*** MICRO JOURNAL 2000 ***"
-gum style --foreground 220 --bold "Quit Options"
+gum_header_primary "*** MICRO JOURNAL 2000 ***"
+gum_header_secondary "Quit Options"
 echo
 
 # Create the quit menu
@@ -30,7 +33,7 @@ case "${CHOICE,,}" in  # Convert to lowercase
     gum style --foreground 196 "Warning: This will turn off the system."
     echo
     
-    if gum confirm "Are you sure you want to shutdown?"; then
+    if gum_confirm_danger "Are you sure you want to shutdown?"; then
       echo
       gum style --foreground 220 "Syncing filesystems..."
       sudo sync
@@ -51,7 +54,7 @@ case "${CHOICE,,}" in  # Convert to lowercase
     gum style --foreground 196 "Warning: This will restart the system."
     echo
     
-    if gum confirm "Are you sure you want to reboot?"; then
+    if gum_confirm_danger "Are you sure you want to reboot?"; then
       echo
       gum style --foreground 220 "Syncing filesystems..."
       sudo sync

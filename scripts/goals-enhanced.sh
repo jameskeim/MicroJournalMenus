@@ -8,15 +8,11 @@ DOCS_DIR="$HOME/Documents/writing"
 CONFIG_FILE="$MCRJRNL/config"
 TODAY=$(date +%Y.%m.%d)
 
+# Load standardized color system
+source "$MCRJRNL/scripts/colors.sh"
+
 # Import analytics cache system
 source "$MCRJRNL/scripts/analytics-cache.sh"
-
-# Colors
-CYAN='\033[0;36m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-NC='\033[0m'
 
 # ═══════════════════════════════════════════════════════════════
 # CACHE-OPTIMIZED WORD COUNT FUNCTIONS
@@ -259,23 +255,136 @@ set_goals() {
 }
 
 # ═══════════════════════════════════════════════════════════════
+# PAGER UTILITY FUNCTIONS
+# ═══════════════════════════════════════════════════════════════
+
+# Function to get single keypress (borrowed from wordcount-enhanced.sh)
+get_single_key() {
+    local old_tty_settings=$(stty -g)
+    stty -icanon -echo min 1 time 0
+    local key=$(dd bs=1 count=1 2>/dev/null)
+    stty "$old_tty_settings"
+    echo "$key"
+}
+
+# Show today's sessions with pagination (98x12 optimized)
+show_today_sessions_paged() {
+    local today_date=$(date +%Y-%m-%d)
+    local sessions_per_page=8  # Maximum sessions that fit in 12-line display
+    local current_page=1
+    
+    # Build session arrays from cache
+    declare -a session_files
+    declare -a session_dates
+    declare -a session_times
+    declare -a session_words
+    declare -a session_titles
+    
+    local session_count=0
+    local total_words=0
+    
+    if is_cache_valid; then
+        # Get today's sessions from session cache
+        while IFS='|' read -r filename date time word_count char_count duration wmp timestamp; do
+            # Skip comments and empty lines
+            [[ "$filename" =~ ^#.*$ ]] && continue
+            [ -z "$filename" ] && continue
+            
+            # Filter for today's entries
+            if [ "$date" = "$today_date" ]; then
+                session_files+=("$filename")
+                session_dates+=("$date")
+                session_times+=("$time")
+                session_words+=("$word_count")
+                session_titles+=("$(extract_title_from_filename "$filename")")
+                
+                total_words=$((total_words + word_count))
+                session_count=$((session_count + 1))
+            fi
+        done < "$SESSION_CACHE"
+    fi
+    
+    if [ $session_count -eq 0 ]; then
+        clear
+        echo -e "${COLOR_ERROR}No writing sessions found for today.${COLOR_RESET}"
+        echo -n "Press any key to continue..."
+        read -n 1 -s
+        return
+    fi
+    
+    # Use pagination for all session views (consistent UX)
+    local total_pages=$(((session_count + sessions_per_page - 1) / sessions_per_page))
+    
+    while true; do
+        clear
+        
+        # Compact header (Line 1)
+        printf "%*s\n" $(((98 - 30) / 2)) ""
+        echo -e "\033[1;38;5;81m▐ TODAY'S SESSIONS ▌\033[0m Page $current_page/$total_pages"
+        
+        # Session list (Lines 2-9, up to 8 sessions)
+        local start_idx=$(((current_page - 1) * sessions_per_page))
+        local end_idx=$((start_idx + sessions_per_page - 1))
+        if [ $end_idx -ge $session_count ]; then
+            end_idx=$((session_count - 1))
+        fi
+        
+        for i in $(seq $start_idx $end_idx); do
+            local title="${session_titles[$i]}"
+            # Truncate title to fit in remaining space (98 - time(5) - words(5) - spaces(2) = 86)
+            local max_title_length=86
+            if [ ${#title} -gt $max_title_length ]; then
+                title="${title:0:$((max_title_length-3))}..."
+            fi
+            printf "${CYAN}%s${NC} ${GREEN}%4d${NC} %s\n" "${session_times[$i]}" "${session_words[$i]}" "$title"
+        done
+        
+        # Fill remaining lines if needed (to maintain consistent layout)
+        local displayed_sessions=$((end_idx - start_idx + 1))
+        for i in $(seq $((displayed_sessions + 1)) $sessions_per_page); do
+            echo
+        done
+        
+        # Summary line (Line 10)
+        echo -e "${GREEN}Total: $session_count sessions, $total_words words${NC}"
+        
+        # Navigation prompt (Line 11-12)
+        local nav_options=""
+        if [ $current_page -gt 1 ]; then
+            nav_options="${nav_options}[p]rev "
+        fi
+        if [ $current_page -lt $total_pages ]; then
+            nav_options="${nav_options}[n]ext "
+        fi
+        nav_options="${nav_options}[q]uit"
+        
+        echo -n "$nav_options: "
+        local key=$(get_single_key | tr '[:upper:]' '[:lower:]')
+        
+        case $key in
+        'p')
+            if [ $current_page -gt 1 ]; then
+                current_page=$((current_page - 1))
+            fi
+            ;;
+        'n')
+            if [ $current_page -lt $total_pages ]; then
+                current_page=$((current_page + 1))
+            fi
+            ;;
+        'q')
+            break
+            ;;
+        esac
+    done
+}
+
+# ═══════════════════════════════════════════════════════════════
 # ENHANCED PROGRESS DASHBOARD
 # ═══════════════════════════════════════════════════════════════
 
 show_progress_dashboard() {
     clear
-    echo
-    printf "%*s\n" $(((98 - 17) / 2)) ""
-    echo -e "\033[1;38;5;81m▐ WRITING PROGRESS ▌\033[0m"
-    
-    # Show cache status for debugging
-    if is_cache_valid; then
-        echo -e "${GREEN}[Cache Enabled]${NC}"
-    else
-        echo -e "${YELLOW}[Cache Unavailable - File Scanning]${NC}"
-    fi
-    echo
-    
     load_config
     
     # PERFORMANCE TEST: Time the operations
@@ -289,47 +398,61 @@ show_progress_dashboard() {
     local end_time=$(date +%s%N)
     local duration=$(((end_time - start_time) / 1000000))  # Convert to milliseconds
     
-    # Today's Progress
-    echo "Goal Progress: $(show_progress "$today_count" "$daily_goal")"
-    echo
-    
-    # Show today's sessions
-    if [ "$today_count" -gt 0 ]; then
-        echo "Sessions today: $today_sessions"
-        
-        # Show recent session details if cache available
-        if is_cache_valid; then
-            echo "Recent sessions:"
-            get_recent_sessions 3 | while IFS='|' read filename date time words chars duration wpm timestamp; do
-                [ -z "$filename" ] && continue
-                local title=$(extract_title_from_filename "$filename")
-                printf "  %s %s: %d words" "$date" "$time" "$words"
-                [ -n "$title" ] && [ "$title" != "[untitled]" ] && printf " (%s)" "$title"
-                echo
-            done
-        fi
-        echo
+    # Compact header with cache status (Line 1)
+    local cache_indicator=""
+    if is_cache_valid; then
+        cache_indicator="${GREEN}●${NC}"
+    else
+        cache_indicator="${YELLOW}●${NC}"
     fi
+    printf "%*s\n" $(((98 - 35) / 2)) ""
+    echo -e "\033[1;38;5;81m▐ WRITING PROGRESS ▌\033[0m ${cache_indicator} ${CYAN}${duration}ms${NC}"
     
-    # Weekly and Monthly Progress
-    echo "This Week: $week_count/$weekly_goal words"
-    echo "This Month: $month_count/$monthly_goal words"
-    echo
+    # Today's goal progress (Line 2)
+    echo "Today: $(show_progress "$today_count" "$daily_goal")"
     
-    # Goal achievement messaging
+    # Period summaries on one line (Line 3)
+    echo "Week: $week_count/$weekly_goal | Month: $month_count/$monthly_goal | Sessions: $today_sessions"
+    
+    # Goal achievement or motivation (Line 4)
     if [ "$today_count" -ge "$daily_goal" ]; then
-        echo -e "${GREEN}*** Daily goal achieved! Total: $today_count words ***${NC}"
+        echo -e "${GREEN}*** Daily goal achieved! ***${NC}"
     else
         local needed=$((daily_goal - today_count))
         echo "Need $needed more words to reach daily goal"
     fi
     
-    # Performance indicator
-    echo
-    echo -e "${CYAN}Analytics loaded in ${duration}ms${NC}"
+    # Recent sessions preview (Lines 5-8, max 4 sessions)
+    if [ "$today_count" -gt 0 ] && is_cache_valid; then
+        echo -e "${YELLOW}Recent Sessions:${NC}"
+        get_recent_sessions 4 | head -4 | while IFS='|' read filename date time words chars duration wpm timestamp; do
+            [ -z "$filename" ] && continue
+            
+            local title=$(extract_title_from_filename "$filename")
+            # Truncate title to fit in 98 characters with other info
+            local max_title_length=$((98 - 15))  # Account for time and word count
+            if [ ${#title} -gt $max_title_length ]; then
+                title="${title:0:$((max_title_length-3))}..."
+            fi
+            printf "${CYAN}%s${NC} ${GREEN}%4d${NC} %s\n" "$time" "$words" "$title"
+        done
+    fi
     
+    # Navigation prompt (Line 9-12 depending on content)
     echo
-    read -p "Press Enter to continue..."
+    if [ "$today_sessions" -gt 4 ]; then
+        echo -n "Press [S] for all sessions, [Enter] to continue: "
+    else
+        echo -n "Press [Enter] to continue: "
+    fi
+    
+    local key=$(get_single_key | tr '[:upper:]' '[:lower:]')
+    
+    if [ "$key" = "s" ] && [ "$today_sessions" -gt 4 ]; then
+        show_today_sessions_paged
+        echo
+        read -p "Press Enter to continue..."
+    fi
 }
 
 # Cache management menu

@@ -7,6 +7,11 @@
 # Every vertical line is precious - we maximize information density while
 # maintaining usability.
 
+# Load standardized styling systems
+MCRJRNL="${MCRJRNL:-$HOME/.microjournal}"
+source "$MCRJRNL/scripts/colors.sh"
+source "$MCRJRNL/scripts/gum-styles.sh"
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # DISPLAY CONSTRAINTS ANALYSIS
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -256,9 +261,9 @@ notes_compact() {
   # Check if fzf is available and we're in a tty, fall back to simple interface
   if ! command -v fzf >/dev/null 2>&1 || ! [ -t 0 ]; then
     if ! command -v fzf >/dev/null 2>&1; then
-      gum style --foreground 196 "fzf not found, using simple interface"
+      gum_error "fzf not found, using simple interface"
     else
-      gum style --foreground 220 "Not in terminal mode, using simple interface"
+      gum_info "Not in terminal mode, using simple interface"
     fi
     sleep 1
     notes_list "$search_term"
@@ -310,7 +315,7 @@ notes_list() {
   mkdir -p "$NOTES_DIR"
 
   clear
-  printf "\033[1;38;5;81mNotes Manager\033[0m\n\n"
+  printf "${COLOR_HEADER_PRIMARY}Notes Manager${COLOR_RESET}\n\n"
 
   if [ -n "$search_term" ]; then
     # Search mode - show matches in 7 lines max
