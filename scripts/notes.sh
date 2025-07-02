@@ -6,6 +6,8 @@
 # This configuration is specifically optimized for a 98-column by 12-line display
 # Every vertical line is precious - we maximize information density while
 # maintaining usability.
+# HARMONIZATION PASS 1: COMPLETED WITH FUNCTIONAL VARIATIONS
+# Uses FZF interface requiring custom display logic - follows core styling principles
 
 # Load standardized styling systems
 MCRJRNL="${MCRJRNL:-$HOME/.microjournal}"
@@ -326,8 +328,8 @@ notes_list() {
       echo
       read -p "Select # or Enter for new note: " choice
     else
-      gum style --foreground 196 "No matches found for '$search_term'"
-      gum style --foreground 46 "Creating new note..."
+      gum_error "No matches found for '$search_term'"
+      gum_success "Creating new note..."
       instant_create_note "$search_term"
       return
     fi
@@ -401,7 +403,7 @@ display_menu() {
 
   # Prompt (1 line)
   printf "\n%-42s" ""
-  printf "$(tput setaf 3)Selection: $(tput sgr0)"
+  echo -ne "${COLOR_PROMPT}Selection: ${COLOR_RESET}"
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

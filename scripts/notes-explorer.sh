@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 # notes-explorer.sh - Compact Notes Knowledge Management
 # Optimized for 98x12 display
+# HARMONIZATION PASS 1: COMPLETED - Full compliance: styling systems, prompts, emoji removal
 
 NOTES_DIR="$HOME/Documents/notes"
 MCRJRNL_DIR="${MCRJRNL:-$HOME/.microjournal}"
+
+# Load standardized styling systems
+source "$MCRJRNL_DIR/scripts/colors.sh"
+source "$MCRJRNL_DIR/scripts/gum-styles.sh"
 
 # Ensure notes directory exists
 mkdir -p "$NOTES_DIR"
@@ -40,7 +45,7 @@ while true; do
   echo "O) Orphan Notes     N) Note Stats       Q) Quit to Main Menu"
   echo
 
-  printf "Selection: "
+  printf '%b' "${COLOR_PROMPT}Selection: ${COLOR_RESET}"
   read -n 1 -s choice
   choice=$(echo "$choice" | tr '[:upper:]' '[:lower:]')
   echo "$choice"
@@ -62,7 +67,7 @@ while true; do
             --layout=reverse \
             --border=none \
             --info=inline \
-            --prompt="🏷️  Browse tags - Select to find notes > " \
+            --prompt="Browse tags - Select to find notes > " \
             --preview="grep -r -l '{}' '$NOTES_DIR' --include='*.md' 2>/dev/null | head -10 | xargs -I {} sh -c 'echo \"=== {} ===\"; head -3 \"{}\"' 2>/dev/null" \
             --preview-window="right:60%:wrap" \
             --header="Browse Tags - Select a tag to see related notes" \
@@ -115,7 +120,7 @@ while true; do
           --layout=reverse \
           --border=none \
           --info=inline \
-          --prompt="📔 Select note to explore links > " \
+          --prompt="Select note to explore links > " \
           --preview="head -20 {}" \
           --preview-window="right:50%:wrap" \
           --header="Link Explorer - Select a note to see its connections" \
@@ -175,7 +180,7 @@ while true; do
             --layout=reverse \
             --border=none \
             --info=inline \
-            --prompt="🔍 Search results for '$search_term' > " \
+            --prompt="Search results for '$search_term' > " \
             --preview="grep -n -C 3 -i '$search_term' {} || echo 'Preview not available'" \
             --preview-window="right:60%:wrap" \
             --header="Search Content - Select file to view matches" \
@@ -251,7 +256,7 @@ while true; do
           --layout=reverse \
           --border=none \
           --info=inline \
-          --prompt="🏝️  Orphan notes - Select to view > " \
+          --prompt="Orphan notes - Select to view > " \
           --preview="head -15 {} 2>/dev/null || echo 'Preview not available'" \
           --preview-window="right:50%:wrap" \
           --header="Orphan Notes - Notes with no connections (${#orphan_files[@]} found)" \

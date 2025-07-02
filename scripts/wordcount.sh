@@ -5,6 +5,12 @@
 # NOTE: This script is designed for Markdown files (.md) only.
 # WordGrinder files (.wg) use a proprietary format and are incompatible.
 
+# Configuration
+MCRJRNL="${MCRJRNL:-$HOME/.microjournal}"
+
+# Load standardized color system
+source "$MCRJRNL/scripts/colors.sh"
+
 export FZF_DEFAULT_COMMAND="fd --type f"
 
 # Writing directory
@@ -339,7 +345,7 @@ while true; do
   center_text "\033[91mE\033[0m - Exit to Main Menu"
   echo
   printf "%*s" $((($(get_terminal_width) - 18) / 2)) ""
-  echo -n -e "\033[96mMake a selection: \033[0m"
+  echo -ne "${COLOR_PROMPT}Selection: ${COLOR_RESET}"
 
   choice=$(get_single_key | tr '[:upper:]' '[:lower:]')
 

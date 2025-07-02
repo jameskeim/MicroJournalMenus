@@ -2,6 +2,12 @@
 # display-constraints.sh - 98x12 display management utilities
 # Shared functions for managing output within screen constraints
 
+# Configuration
+MCRJRNL="${MCRJRNL:-$HOME/.microjournal}"
+
+# Load standardized color system
+source "$MCRJRNL/scripts/colors.sh"
+
 # ═══════════════════════════════════════════════════════════════
 # DISPLAY CONSTRAINTS
 # ═══════════════════════════════════════════════════════════════
@@ -60,7 +66,7 @@ limit_session_display() {
         
         # Process and display session
         local title=$(echo "$filename" | sed 's/.*-\([^.]*\)\.md$/\1/' | sed 's/-/ /g')
-        printf "\033[96m%s\033[0m \033[93m%4d\033[0m  %s\n" "$time" "$word_count" "$title"
+        printf "%b%s%b %b%4d%b  %s\n" "${COLOR_INFO}" "$time" "${COLOR_RESET}" "${COLOR_WORDCOUNT}" "$word_count" "${COLOR_RESET}" "$title"
     done
 }
 
@@ -106,9 +112,9 @@ show_compact_header() {
     local title="$1"
     local subtitle="$2"
     
-    center_text_constrained "\033[96m▐ $title ▌\033[0m"
+    center_text_constrained "${COLOR_HEADER_PRIMARY}▐ $title ▌${COLOR_RESET}"
     if [ -n "$subtitle" ]; then
-        center_text_constrained "\033[93m$subtitle\033[0m"
+        center_text_constrained "${COLOR_WARNING}$subtitle${COLOR_RESET}"
     fi
     echo
 }
@@ -120,9 +126,9 @@ show_compact_session_complete() {
     local wpm="$3"
     local goal_progress="$4"
     
-    echo -e "\033[92m=== SESSION COMPLETE ===\033[0m"
-    echo -e "\033[93m$word_count words, $duration, $wpm wpm\033[0m"
-    echo -e "\033[92mCached for instant analytics\033[0m"
+    echo -e "${COLOR_SUCCESS}=== SESSION COMPLETE ===${COLOR_RESET}"
+    echo -e "${COLOR_WARNING}$word_count words, $duration, $wpm wpm${COLOR_RESET}"
+    echo -e "${COLOR_SUCCESS}Cached for instant analytics${COLOR_RESET}"
     if [ -n "$goal_progress" ]; then
         echo "$goal_progress"
     fi
@@ -160,9 +166,9 @@ show_compact_analytics() {
     show_compact_progress "$today_count" "$goal"
     echo
     if [ "$cache_enabled" = "true" ]; then
-        echo -e "\033[92m[Instant Analytics Enabled]\033[0m"
+        echo -e "${COLOR_SUCCESS}[Instant Analytics Enabled]${COLOR_RESET}"
     else
-        echo -e "\033[93m[File Scanning Mode]\033[0m"
+        echo -e "${COLOR_WARNING}[File Scanning Mode]${COLOR_RESET}"
     fi
 }
 
@@ -176,7 +182,7 @@ show_ultra_compact_menu() {
     shift
     local -a options=("$@")
     
-    center_text_constrained "\033[96m▐ $title ▌\033[0m"
+    center_text_constrained "${COLOR_HEADER_PRIMARY}▐ $title ▌${COLOR_RESET}"
     echo
     
     # Display options in compact format

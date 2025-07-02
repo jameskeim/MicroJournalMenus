@@ -2,9 +2,15 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 # SIMPLE WRITING PROMPT GENERATOR - OPTIMIZED FOR 98x12 DISPLAY
 # ═══════════════════════════════════════════════════════════════════════════════
+# HARMONIZATION PASS 1: COMPLETED - Full compliance: ANSI→COLOR_, emoji removal, system integration
 #
 # Ultra-lightweight writing prompt system using simple text files
 # Perfect for MICRO JOURNAL 2000 PAUSE menu - inspiring breaks between writing sessions
+
+# Load standardized styling systems (preserving elegant look)
+MCRJRNL="${MCRJRNL:-$HOME/.microjournal}"
+source "$MCRJRNL/scripts/colors.sh"
+source "$MCRJRNL/scripts/gum-styles.sh"
 
 # Handle Ctrl-C gracefully
 trap 'echo; echo "Exiting..."; exit 0' SIGINT
@@ -13,18 +19,7 @@ PROMPTS_DIR="$HOME/.microjournal/prompts"
 CUSTOM_PROMPTS="$PROMPTS_DIR/custom.txt"
 COLORS="off" # Set to "on" for color output
 
-# Colors for output (only if enabled)
-if [ "$COLORS" = "on" ]; then
-  CYAN='\033[0;36m'
-  YELLOW='\033[1;33m'
-  GREEN='\033[0;32m'
-  NC='\033[0m'
-else
-  CYAN=''
-  YELLOW=''
-  GREEN=''
-  NC=''
-fi
+# Colors handled by standardized COLOR_ system - removed legacy ANSI codes
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # BUILT-IN PROMPT LIBRARY (No external files needed!)
@@ -127,13 +122,13 @@ show_random_prompt() {
   # Clean display optimized for 12-line constraint
   clear
   
-  # Display centered prompt with elegant gum styling
-  echo "$selected_prompt" | gum style --foreground 159 --align center --width 98 --margin "3 0"
+  # Display centered prompt with elegant gum styling (keep the beautiful light purple!)
+  echo "$selected_prompt" | gum style --foreground "$GUM_PROMPT" --align center --width 98 --margin "3 0"
   
   echo
   
-  # Simple choice using gum confirm
-  if gum confirm "Another prompt?"; then
+  # Simple choice using high-contrast gum confirm
+  if gum_confirm_normal "Another prompt?"; then
     return 0  # Get another prompt (continues the loop in main menu)
   else
     return 1  # Go back to main menu
@@ -150,7 +145,7 @@ add_prompt() {
   if [ -n "$new_prompt" ]; then
     # Add prompt to custom file
     echo "$new_prompt" >>"$CUSTOM_PROMPTS"
-    gum style --foreground 46 --align center "✅ Prompt added successfully!"
+    gum_success "Prompt added successfully!"
     sleep 1
   fi
 }
@@ -187,11 +182,11 @@ show_stats() {
   # Select random quote
   local random_quote="${writing_quotes[$((RANDOM % ${#writing_quotes[@]}))]}"
 
-  # Display with ANSI colors instead of emoji
-  printf "\033[1;38;5;81mPrompt Library Statistics\033[0m\n\n"
-  printf "Built-in prompts: \033[1;38;5;46m%d\033[0m\n" "$builtin_count"
-  printf "Custom prompts:   \033[1;38;5;46m%d\033[0m\n" "$custom_count"
-  printf "Total prompts:    \033[1;38;5;220m%d\033[0m\n" "$total_count"
+  # Display with standardized COLOR_ system
+  printf "${COLOR_HEADER_PRIMARY}Prompt Library Statistics${COLOR_RESET}\n\n"
+  printf "Built-in prompts: ${COLOR_SUCCESS}%d${COLOR_RESET}\n" "$builtin_count"
+  printf "Custom prompts:   ${COLOR_SUCCESS}%d${COLOR_RESET}\n" "$custom_count"
+  printf "Total prompts:    ${COLOR_WARNING}%d${COLOR_RESET}\n" "$total_count"
   echo
   echo "$random_quote" | fold -s -w 90
   echo
@@ -227,7 +222,7 @@ browse_prompts() {
   
   while true; do
     clear
-    printf "\033[1;38;5;81m📚 Browse Prompts (%d total)\033[0m\n\n" "$total_lines"
+    printf "${COLOR_HEADER_PRIMARY}Browse Prompts (%d total)${COLOR_RESET}\n\n" "$total_lines"
     
     # Show current page of prompts
     local end_line=$((current_line + lines_per_page))
@@ -239,13 +234,14 @@ browse_prompts() {
     
     # Show navigation help
     echo
-    printf "\033[2m↑/↓ Line • ←/→ Page • Q Quit • %d/%d\033[0m" \
+    printf "${COLOR_DIM}↑/↓ Line • ←/→ Page • Q Quit • %d/%d${COLOR_RESET}" \
            "$end_line" "$total_lines"
     
     # Get user input
     read -n 1 -s key
     case "$key" in
       'q'|'Q') break ;;
+      # QA-EXEMPT: ANSI escape for arrow key detection, not display styling
       $'\033') # Arrow key sequence
         read -n 2 -s -t 0.1 arrow
         case "$arrow" in
@@ -278,7 +274,7 @@ show_menu() {
   clear
   
   # Display title with ANSI (fast)
-  printf "\033[1;38;5;81m✨ Writing Prompt Generator\033[0m\n\n"
+  printf "${COLOR_HEADER_PRIMARY}Writing Prompt Generator${COLOR_RESET}\n\n"
   
   echo "What would you like to do?"
   echo
@@ -288,7 +284,7 @@ show_menu() {
   echo "  S) Statistics"
   echo "  Q) Quit"
   echo
-  printf "Your choice: "
+  printf '%b' "${COLOR_PROMPT}Selection: ${COLOR_RESET}"
 }
 
 # Main program loop
@@ -337,7 +333,7 @@ main() {
         show_stats
         ;;
       "q")
-        printf "\033[1;38;5;46mHappy writing! ✍️\033[0m\n"
+        printf "${COLOR_SUCCESS}Happy writing!${COLOR_RESET}\n"
         exit 0
         ;;
       *)

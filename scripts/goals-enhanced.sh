@@ -1,6 +1,7 @@
 #!/bin/bash
 # goals-enhanced.sh - Cache-Enhanced Goal Tracking for MICRO JOURNAL 2000
 # Performance-optimized version using analytics cache system
+# HARMONIZATION PASS 2: COMPLETED - Fixed numbered menus to use letters with hotkey colors
 
 # Configuration
 MCRJRNL="${MCRJRNL:-$HOME/.microjournal}"
@@ -222,7 +223,7 @@ set_goals() {
     clear
     echo
     printf "%*s\n" $(((98 - 10) / 2)) ""
-    echo -e "\033[1;38;5;81m▐ SET GOALS ▌\033[0m"
+    echo -e "${COLOR_HEADER_PRIMARY}▐ SET GOALS ▌${COLOR_RESET}"
     echo
     
     load_config
@@ -320,7 +321,7 @@ show_today_sessions_paged() {
         
         # Compact header (Line 1)
         printf "%*s\n" $(((98 - 30) / 2)) ""
-        echo -e "\033[1;38;5;81m▐ TODAY'S SESSIONS ▌\033[0m Page $current_page/$total_pages"
+        echo -e "${COLOR_HEADER_PRIMARY}▐ TODAY'S SESSIONS ▌${COLOR_RESET} Page $current_page/$total_pages"
         
         # Session list (Lines 2-9, up to 8 sessions)
         local start_idx=$(((current_page - 1) * sessions_per_page))
@@ -406,7 +407,7 @@ show_progress_dashboard() {
         cache_indicator="${YELLOW}●${NC}"
     fi
     printf "%*s\n" $(((98 - 35) / 2)) ""
-    echo -e "\033[1;38;5;81m▐ WRITING PROGRESS ▌\033[0m ${cache_indicator} ${CYAN}${duration}ms${NC}"
+    echo -e "${COLOR_HEADER_PRIMARY}▐ WRITING PROGRESS ▌${COLOR_RESET} ${cache_indicator} ${COLOR_INFO}${duration}ms${COLOR_RESET}"
     
     # Today's goal progress (Line 2)
     echo "Today: $(show_progress "$today_count" "$daily_goal")"
@@ -460,26 +461,26 @@ show_cache_menu() {
     clear
     echo
     printf "%*s\n" $(((98 - 15) / 2)) ""
-    echo -e "\033[1;38;5;81m▐ CACHE MANAGEMENT ▌\033[0m"
+    echo -e "${COLOR_HEADER_PRIMARY}▐ CACHE MANAGEMENT ▌${COLOR_RESET}"
     echo
     
     show_cache_stats
     echo
     
-    echo "1) Rebuild daily cache   2) Show cache contents   3) Back to main menu"
+    echo -e "${COLOR_HOTKEY}R${COLOR_RESET}ebuild daily cache   ${COLOR_HOTKEY}S${COLOR_RESET}how cache contents   ${COLOR_HOTKEY}B${COLOR_RESET}ack to main menu"
     echo
-    printf "Choice: "
+    echo -ne "${COLOR_PROMPT}Selection: ${COLOR_RESET}"
     read -n 1 -s choice
     echo "$choice"
     echo
     
     case "$choice" in
-    "1")
+    "r"|"R"|"1")
         rebuild_daily_cache
         echo
         read -p "Press Enter to continue..."
         ;;
-    "2")
+    "s"|"S"|"2")
         echo "Session Cache (last 10 entries):"
         tail -10 "$SESSION_CACHE" | while IFS='|' read filename date time words chars duration wpm timestamp; do
             [[ "$filename" =~ ^#.*$ ]] && continue
@@ -496,7 +497,7 @@ show_cache_menu() {
         echo
         read -p "Press Enter to continue..."
         ;;
-    "3")
+    "b"|"B"|"3")
         return
         ;;
     esac
@@ -522,23 +523,23 @@ case "${1:-menu}" in
         clear
         echo
         printf "%*s\n" $(((98 - 8) / 2)) ""
-        echo -e "\033[1;38;5;81m▐ GOALS ▌\033[0m"
+        echo -e "${COLOR_HEADER_PRIMARY}▐ GOALS ▌${COLOR_RESET}"
         echo
-        echo "1) View Progress   2) Set Goals   3) Cache Management   Q) Quit"
+        echo -e "${COLOR_HOTKEY}V${COLOR_RESET}iew Progress   ${COLOR_HOTKEY}S${COLOR_RESET}et Goals   ${COLOR_HOTKEY}C${COLOR_RESET}ache Management   ${COLOR_HOTKEY}Q${COLOR_RESET}uit"
         echo
-        printf "Choice: "
+        echo -ne "${COLOR_PROMPT}Selection: ${COLOR_RESET}"
         read -n 1 -s choice
         echo "$choice"
         echo
         
         case "$choice" in
-        "1")
+        "v"|"V"|"1")
             show_progress_dashboard
             ;;
-        "2")
+        "s"|"S"|"2")
             set_goals
             ;;
-        "3")
+        "c"|"C"|"3")
             show_cache_menu
             ;;
         "q"|"Q")

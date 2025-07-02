@@ -12,6 +12,12 @@ This plan harmonizes all secondary scripts launched from the main menu to follow
 - `quit.sh` - Uses gum-styles.sh with high-contrast confirms
 - `newMarkDown-enhanced.sh` - Modern styling implementation
 
+### ✅ **Harmonized with Functional Variations**
+Scripts that follow core styling principles but require interface-specific adaptations:
+- `notes.sh` - FZF interface with custom display logic, uses styling systems
+- `prompts.sh` - Interactive prompt selection with custom gum usage patterns
+- `inspirations.sh` - Fortune integration with specialized display formatting
+
 ### ⚠️ **Partially Harmonized (Mixed Style)**
 - `notes.sh` - Extensive manual ANSI + some gum usage
 - `network.sh` - Hardcoded ANSI + basic gum
@@ -147,12 +153,33 @@ Analyze remaining scripts and apply harmonization:
 - `journal-menu.sh`, `outliner.sh`, `notes-explorer.sh`
 - `backup.sh`, `inspirations.sh`, `config.sh`
 
+## Harmonization Tracking System
+
+Each script should include a harmonization status comment in its header:
+
+### **Tracking Comment Standards**
+```bash
+# HARMONIZATION PASS 1: COMPLETED - Standard implementation
+# HARMONIZATION PASS 1: COMPLETED WITH FUNCTIONAL VARIATIONS - Custom interface adaptations
+# HARMONIZATION PASS 1: PARTIALLY COMPLETED - Mixed old/new approaches  
+# HARMONIZATION PASS 1: NOT STARTED - Requires full harmonization
+# HARMONIZATION PASS 1: SKIPPED - Legacy/minimal script, no changes needed
+```
+
+### **Functional Variation Guidelines**
+Scripts with specialized interfaces (FZF, fortune, interactive prompts) may:
+- Use custom display logic while sourcing styling systems
+- Adapt gum functions for their specific interface needs
+- Maintain core principles: colors.sh usage, 98×12 constraints, no emojis
+- Include explanatory comments about interface-specific choices
+
 ## Implementation Template
 
 ### **Standard Script Header Pattern**
 ```bash
 #!/bin/bash
 # script-name.sh - Brief description
+# HARMONIZATION PASS 1: COMPLETED - Full compliance with style guide
 
 # Configuration
 MCRJRNL="${MCRJRNL:-$HOME/.microjournal}"
@@ -167,8 +194,37 @@ clear
 echo -e "${COLOR_HEADER_PRIMARY}▐ SCRIPT TITLE ▌${COLOR_RESET}"
 
 # Menu pattern for interactive scripts
-echo -e "${COLOR_HOTKEY}[A]${COLOR_RESET}ction One    ${COLOR_HOTKEY}[B]${COLOR_RESET}ction Two"
-echo -e "${COLOR_HOTKEY}[Q]${COLOR_RESET}uit"
+echo -e "${COLOR_HOTKEY}T${COLOR_RESET}oday's Writing    ${COLOR_HOTKEY}R${COLOR_RESET}ecent Files"
+echo -e "${COLOR_HOTKEY}Q${COLOR_RESET}uit"
+echo -n "${COLOR_PROMPT}Selection: ${COLOR_RESET}"
+```
+
+### **CRITICAL: Menu Item Standards**
+
+**DO NOT use brackets around hotkeys in output:**
+```bash
+# WRONG - Shows brackets on screen
+echo -e "${COLOR_HOTKEY}[T]${COLOR_RESET}oday's Writing"
+
+# CORRECT - No brackets, just colored letter
+echo -e "${COLOR_HOTKEY}T${COLOR_RESET}oday's Writing"
+```
+
+**Use letters from words, not numbers:**
+```bash
+# WRONG - Numbers are hard on 40% keyboards
+echo "1) Today   2) Recent   3) Quit"
+
+# CORRECT - Letters integrated into words
+echo -e "${COLOR_HOTKEY}T${COLOR_RESET}oday    ${COLOR_HOTKEY}R${COLOR_RESET}ecent    ${COLOR_HOTKEY}Q${COLOR_RESET}uit"
+```
+
+**Ensure Selection prompt uses color variables:**
+```bash
+# WRONG - Shows ANSI codes on screen
+echo -n "\033[93mSelection: \033[0m"
+
+# CORRECT - Uses color variables  
 echo -n "${COLOR_PROMPT}Selection: ${COLOR_RESET}"
 ```
 
@@ -200,6 +256,22 @@ gum style --foreground 159 --align center --width 98 "$content"
 gum_content "$content"
 ```
 
+**Character Safety:**
+```bash
+# AVOID: Emojis (display as unknown characters)
+echo "Writing session complete! 🎉"
+# USE: ASCII alternatives
+echo "Writing session complete! [✓]"
+
+# AVOID: Unicode progress blocks
+echo "Progress: ▓▓▓▓▓░░░░░"
+# USE: ASCII progress bars
+echo "Progress: [████░░░░░░]"
+
+# SAFE: Basic UTF-8 box drawing
+echo -e "${COLOR_HEADER_PRIMARY}▐ TITLE ▌${COLOR_RESET}"
+```
+
 ## Quality Assurance Checklist
 
 For each harmonized script:
@@ -222,6 +294,13 @@ For each harmonized script:
 - [ ] Left-aligned functional layout
 - [ ] Minimal blank lines
 - [ ] Proper text truncation for long content
+
+### **UTF-8 Character Restrictions**
+- [ ] No emojis used (display as unknown characters on fbterm)
+- [ ] Safe UTF-8 box drawing only: `▐`, `▌`, `─`, `│`, `┌`, `┐`, `└`, `┘`
+- [ ] ASCII progress bars: `[████░░░░]` not Unicode block characters
+- [ ] Status indicators: `[✓]`, `[✗]`, `[!]` instead of emoji symbols
+- [ ] Safe arrows: `→`, `←`, `↑`, `↓` (basic directional arrows only)
 
 ### **Accessibility**
 - [ ] High contrast interactive elements
@@ -268,13 +347,69 @@ For each harmonized script:
 - Faster load times with cached styling
 - Better resource utilization on Pi Zero 2W
 
+## Refined Harmonization Process (Updated)
+
+### **Step 1: Initial Harmonization**
+1. Add harmonization tracking comment to header
+2. Import styling systems (colors.sh, gum-styles.sh)
+3. Convert hardcoded ANSI codes to COLOR_ variables
+4. Fix menu items: remove brackets, use integrated letters
+5. Update Selection/Choice prompts to use COLOR_PROMPT
+6. Replace emojis with ASCII alternatives
+7. Ensure standard ▐ TITLE ▌ header format
+
+### **Step 2: Quality Assurance**
+1. **MANDATORY**: Run `harmonization-qa.sh` on every script
+2. Fix ALL failures before marking script as complete
+3. Address warnings where possible
+4. Update harmonization comment to reflect completion level
+
+### **Step 3: Multi-Pass Approach**
+- **PASS 1**: Basic conversion (ANSI → COLOR_, styling imports)
+- **PASS 2**: Menu and UX fixes (brackets, prompts, letters vs numbers)
+- **PASS 3**: QA-driven refinements (emoji removal, edge cases)
+
+### **QA Tool Integration**
+The `harmonization-qa.sh` tool is now **mandatory** for verification:
+- Tests 9 critical harmonization standards
+- Provides pass/warn/fail counts with detailed reports
+- Must show 0 failures before marking script complete
+- Reveals issues invisible to manual review
+
+### **Lessons Learned**
+1. **Manual review misses critical issues** - QA tool found 6 failures in "completed" scripts
+2. **Bracket removal is easily missed** - `[T]oday` vs `Today` with colored `T`
+3. **ANSI codes hide throughout scripts** - Requires systematic replacement
+4. **Functional scripts need special handling** - FZF, outliner menus, etc.
+5. **Multiple menu systems per script** - Each needs individual attention
+
 ## Success Metrics
 
 - [ ] All menu-launched scripts use standardized styling systems
-- [ ] Zero hardcoded ANSI escape codes in harmonized scripts
-- [ ] Consistent [Q]uit navigation across all scripts
+- [ ] Zero hardcoded ANSI escape codes in harmonized scripts (except utility functions)
+- [ ] Zero brackets around menu hotkeys in output
+- [ ] All menus use letters integrated into words, not standalone numbers
+- [ ] All Selection/Choice prompts use COLOR_PROMPT variables
+- [ ] Zero emojis (replaced with ASCII: [✓], [✗], [!])
+- [ ] Consistent ▐ TITLE ▌ header format where applicable
+- [ ] **QA tool shows 0 failures** for all harmonized scripts
 - [ ] High-contrast gum elements throughout system
 - [ ] All scripts fit 98×12 display constraint
 - [ ] Unified visual identity across MICRO JOURNAL 2000
 
-This harmonization plan transforms the MICRO JOURNAL 2000 from a collection of individual scripts into a cohesive, professional writing system worthy of the premium hardware craftsmanship.
+## QA Tool Commands
+```bash
+# Test all scripts
+./scripts/harmonization-qa.sh -> A
+
+# Test harmonized scripts only (recommended during development)
+./scripts/harmonization-qa.sh -> H
+
+# Test specific script
+./scripts/harmonization-qa.sh -> S
+
+# View last report
+./scripts/harmonization-qa.sh -> R
+```
+
+This harmonization plan transforms the MICRO JOURNAL 2000 from a collection of individual scripts into a cohesive, professional writing system worthy of the premium hardware craftsmanship. The QA tool ensures consistency and catches issues that manual review misses.

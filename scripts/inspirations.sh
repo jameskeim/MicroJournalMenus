@@ -1,6 +1,12 @@
 #!/bin/bash
 # inspirations.sh - Display inspiring quotations using fortune and gum
-# Save as ~/.microjournal/scripts/inspirations.sh
+# HARMONIZATION PASS 1: COMPLETED WITH FUNCTIONAL VARIATIONS - Spartan interface preserved, gum styling maintained
+
+MCRJRNL="${MCRJRNL:-$HOME/.microjournal}"
+
+# Load standardized styling systems
+source "$MCRJRNL/scripts/colors.sh"
+source "$MCRJRNL/scripts/gum-styles.sh"
 
 show_fortune() {
   clear
@@ -11,8 +17,8 @@ show_fortune() {
   # Get art or literature quotation (under 400 characters) and center it
   fortune_text=$(fortune -n 400 art literature 2>/dev/null || fortune -s -n 300)
   
-  # Display centered fortune with soft color - top-aligned vertical centering
-  echo "$fortune_text" | gum style --foreground 146 --align center --width 98 --padding "4 0 0 0"
+  # Display centered fortune with standardized styling - preserving spartan aesthetic
+  echo "$fortune_text" | gum style --foreground 159 --align center --width 98 --padding "4 0 0 0"
 }
 
 # Main loop

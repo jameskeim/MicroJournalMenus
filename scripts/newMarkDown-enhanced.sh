@@ -1,10 +1,15 @@
 #!/bin/bash
 # newMarkDown-enhanced.sh - Writing session with analytics capture
 # Enhanced version that captures session timing and integrates with analytics cache
+# HARMONIZATION PASS 1: COMPLETED - Full compliance: styling imports, harmonized display functions
 
 # Configuration
 EDITOR="${EDITOR:-nvim}"
 MCRJRNL="${MCRJRNL:-$HOME/.microjournal}"
+
+# Load standardized styling systems
+source "$MCRJRNL/scripts/colors.sh"
+source "$MCRJRNL/scripts/gum-styles.sh"
 
 # Import analytics cache system and display constraints
 source "$MCRJRNL/scripts/analytics-cache.sh"

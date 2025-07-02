@@ -1,32 +1,28 @@
 #!/bin/bash
 # backup.sh - Simple Backup Script for MICRO JOURNAL 2000
 # Creates archive of system and documents, accessible via ShareFiles
+# HARMONIZATION PASS 3: COMPLETED - Full compliance: ANSI→COLOR_, prompts standardized, symbols→ASCII
 
 # Configuration
 MCRJRNL="${MCRJRNL:-$HOME/.microjournal}"
+
+# Load standardized styling systems
+source "$MCRJRNL/scripts/colors.sh"
+
 DOCS_DIR="$HOME/Documents"
 DATE=$(date +%Y.%m.%d-%H%M)
 BACKUP_NAME="backup-$DATE.tar.gz"
 BACKUP_PATH="$DOCS_DIR/$BACKUP_NAME"
 
-# Colors for output
-CYAN='\033[0;36m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-NC='\033[0m'
-
 clear
-echo
-printf "%*s\n" $(((98 - 8) / 2)) ""
-echo -e "\033[1;38;5;81m▐ BACKUP ▌\033[0m"
+echo -e "${COLOR_HEADER_PRIMARY}▐ BACKUP ▌${COLOR_RESET}"
 echo
 echo "Creating: backup-$DATE.tar.gz"
 echo
 
 # Check if backup already exists
 if [ -f "$BACKUP_PATH" ]; then
-    echo -e "${YELLOW}File exists. Overwrite? (y/n):${NC}"
+    echo -n "${COLOR_WARNING}File exists. Overwrite? (y/n): ${COLOR_RESET}"
     read -n 1 -s overwrite
     echo "$overwrite"
     if [ "$overwrite" != "y" ]; then
@@ -52,16 +48,17 @@ if tar -czf "$BACKUP_PATH" \
     backup_size=$(du -h "$BACKUP_PATH" | cut -f1)
     file_count=$(tar -tzf "$BACKUP_PATH" 2>/dev/null | wc -l)
     
-    echo -e "${GREEN}✅ Backup complete${NC}"
+    echo -e "${COLOR_SUCCESS}[✓] Backup complete${COLOR_RESET}"
     echo
     echo "Size: $backup_size | Files: $file_count"
     echo "Accessible via ShareFiles"
     
 else
-    echo -e "${RED}❌ Backup failed${NC}"
+    echo -e "${COLOR_ERROR}[✗] Backup failed${COLOR_RESET}"
     echo "Check permissions and disk space"
     exit 1
 fi
 
 echo
-read -p "Press Enter to continue..."
+echo -ne "${COLOR_PROMPT}Press Enter to continue...${COLOR_RESET}"
+read

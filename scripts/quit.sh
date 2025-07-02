@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 # quit.sh - Power management options for MICRO JOURNAL 2000
 # Combines shutdown and reboot functionality
+# HARMONIZATION PASS 1: COMPLETED - Full compliance: prompt styling fixed
 
 # Use portable installation directory
 MCRJRNL="${MCRJRNL:-$HOME/.microjournal}"
 
-# Load standardized gum styling
+# Load standardized styling systems
+source "$MCRJRNL/scripts/colors.sh"
 source "$MCRJRNL/scripts/gum-styles.sh"
 
 clear
@@ -20,7 +22,7 @@ echo
 gum style --foreground 196 --bold "S) Shutdown System - Power off completely"
 gum style --foreground 33 --bold "R) Reboot System - Restart system"
 echo
-printf "Selection: "
+printf '%b' "${COLOR_PROMPT}Selection: ${COLOR_RESET}"
 read -n 1 -s CHOICE
 echo "$CHOICE"
 echo

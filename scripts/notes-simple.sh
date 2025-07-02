@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 # Terminal Velocity style notes manager for MICRO JOURNAL 2000
 
+# Configuration
+MCRJRNL="${MCRJRNL:-$HOME/.microjournal}"
+
+# Load standardized color system
+source "$MCRJRNL/scripts/colors.sh"
+
 NOTES_DIR="$HOME/Documents/notes"
 EDITOR="${EDITOR:-nvim}"
 
@@ -58,7 +64,7 @@ if command -v fzf >/dev/null 2>&1; then
   
 else
   # Fallback if fzf not available
-  echo -e "\033[196mfzf not found - install for full Terminal Velocity experience\033[0m"
+  echo -e "${COLOR_ERROR}fzf not found - install for full Terminal Velocity experience${COLOR_RESET}"
   echo
   echo "Available notes:"
   find "$NOTES_DIR" -name "*.md" -type f 2>/dev/null | \

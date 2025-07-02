@@ -5,28 +5,15 @@
 #
 # Comprehensive script for Hierarchical Notebook (hnb) with conversion tools
 # Optimized for Pi Zero 2W and writer workflows
+# HARMONIZATION PASS 1: COMPLETED - Converted custom color system to standardized styling
+
+MCRJRNL="${MCRJRNL:-$HOME/.microjournal}"
+
+# Load standardized styling systems
+source "$MCRJRNL/scripts/colors.sh"
+source "$MCRJRNL/scripts/gum-styles.sh"
 
 OUTLINES_DIR="$HOME/Documents/outlines"
-COLORS="on" # Set to "off" to disable colors
-
-# Colors (only if enabled)
-if [ "$COLORS" = "on" ]; then
-  CYAN='\033[0;36m'
-  YELLOW='\033[1;33m'
-  GREEN='\033[0;32m'
-  BLUE='\033[0;34m'
-  RED='\033[0;31m'
-  PURPLE='\033[0;35m'
-  NC='\033[0m'
-else
-  CYAN=''
-  YELLOW=''
-  GREEN=''
-  BLUE=''
-  RED=''
-  PURPLE=''
-  NC=''
-fi
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # INITIALIZATION
@@ -58,14 +45,14 @@ init_outlines() {
 		+ Keep it simple and focused
 		+ Regular saves (Ctrl+S)
 EOF
-    echo -e "${GREEN}✅ Created example outline in $OUTLINES_DIR${NC}"
+    echo -e "${COLOR_SUCCESS}[✓] Created example outline in $OUTLINES_DIR${COLOR_RESET}"
   fi
 }
 
 # Check if hnb is installed
 check_hnb() {
   if ! command -v hnb >/dev/null 2>&1; then
-    echo -e "${RED}❌ HNB not found!${NC}"
+    echo -e "${COLOR_ERROR}[✗] HNB not found!${COLOR_RESET}"
     echo
     echo "Install with:"
     echo "  sudo apt update"
@@ -84,7 +71,7 @@ check_hnb() {
 
 # Show HNB tutorial/help
 launch_tutorial() {
-  echo -e "${CYAN}📚 Launching HNB Tutorial${NC}"
+  echo -e "${COLOR_INFO}Launching HNB Tutorial${COLOR_RESET}"
   echo "Navigate with arrow keys. Press 'q' then Enter to quit."
   sleep 2
 
@@ -92,7 +79,7 @@ launch_tutorial() {
   if ! hnb --tutorial; then
     clear
     echo
-    echo -e "${YELLOW}HNB Quick Reference${NC}"
+    echo -e "${COLOR_WARNING}HNB Quick Reference${COLOR_RESET}"
     echo
     echo "NAV: ↑↓ j/k move  →/Tab expand  ←/h collapse"
     echo "EDIT: Enter edit  i insert  a child  d delete"
@@ -106,7 +93,7 @@ launch_tutorial() {
 
 # Create new outline
 new_outline() {
-  echo -e "${CYAN}📝 Create New Outline${NC}"
+  echo -e "${COLOR_INFO}Create New Outline${COLOR_RESET}"
   echo
   read -p "Enter outline name (without extension): " outline_name
 
@@ -140,12 +127,12 @@ new_outline() {
 		+ Next steps
 EOF
 
-  echo -e "${GREEN}✅ Created: $outline_path${NC}"
+  echo -e "${COLOR_SUCCESS}[✓] Created: $outline_path${COLOR_RESET}"
   echo "Launching HNB..."
   sleep 1
 
   if ! hnb --ascii "$outline_path"; then
-    echo -e "${RED}Failed to launch HNB. You can edit the file manually:${NC}"
+    echo -e "${COLOR_ERROR}Failed to launch HNB. You can edit the file manually:${COLOR_RESET}"
     echo "$outline_path"
   fi
 }
@@ -155,12 +142,12 @@ open_outline() {
   local outlines=($(find "$OUTLINES_DIR" -name "*.hnb" -type f 2>/dev/null | sort))
 
   if [ ${#outlines[@]} -eq 0 ]; then
-    echo -e "${YELLOW}No outlines found in $OUTLINES_DIR${NC}"
+    echo -e "${COLOR_WARNING}No outlines found in $OUTLINES_DIR${COLOR_RESET}"
     echo "Create a new outline first."
     return
   fi
 
-  echo -e "${CYAN}📂 Open Existing Outline${NC}"
+  echo -e "${COLOR_INFO}Open Existing Outline${COLOR_RESET}"
   echo
 
   # List available outlines
@@ -178,10 +165,10 @@ open_outline() {
 
   if [[ "$selection" =~ ^[0-9]+$ ]] && [ "$selection" -ge 1 ] && [ "$selection" -le ${#outlines[@]} ]; then
     local selected_outline="${outlines[$((selection - 1))]}"
-    echo -e "${GREEN}Opening: $(basename "$selected_outline")${NC}"
+    echo -e "${COLOR_SUCCESS}Opening: $(basename "$selected_outline")${COLOR_RESET}"
     sleep 1
     if ! hnb --ascii "$selected_outline"; then
-      echo -e "${RED}Failed to launch HNB. You can edit the file manually:${NC}"
+      echo -e "${COLOR_ERROR}Failed to launch HNB. You can edit the file manually:${COLOR_RESET}"
       echo "$selected_outline"
     fi
   else
@@ -191,7 +178,7 @@ open_outline() {
 
 # Quick outline (temporary)
 quick_outline() {
-  echo -e "${CYAN}⚡ Quick Outline (Temporary)${NC}"
+  echo -e "${COLOR_INFO}Quick Outline (Temporary)${COLOR_RESET}"
   echo "This creates a temporary outline for brainstorming"
   echo "Save it manually if you want to keep it"
   sleep 2
@@ -211,7 +198,7 @@ quick_outline() {
 EOF
 
   if ! hnb --ascii "$temp_outline"; then
-    echo -e "${RED}Failed to launch HNB. Temp outline saved at:${NC}"
+    echo -e "${COLOR_ERROR}Failed to launch HNB. Temp outline saved at:${COLOR_RESET}"
     echo "$temp_outline"
     return
   fi
@@ -224,7 +211,7 @@ EOF
     if [ -n "$save_name" ]; then
       save_name=$(echo "$save_name" | tr ' ' '_' | tr -cd '[:alnum:]_-')
       cp "$temp_outline" "$OUTLINES_DIR/${save_name}.hnb"
-      echo -e "${GREEN}✅ Saved as: ${save_name}.hnb${NC}"
+      echo -e "${COLOR_SUCCESS}[✓] Saved as: ${save_name}.hnb${COLOR_RESET}"
     fi
   fi
 
@@ -240,11 +227,11 @@ export_outline() {
   local outlines=($(find "$OUTLINES_DIR" -name "*.hnb" -type f 2>/dev/null | sort))
 
   if [ ${#outlines[@]} -eq 0 ]; then
-    echo -e "${YELLOW}No HNB outlines found to export${NC}"
+    echo -e "${COLOR_WARNING}No HNB outlines found to export${COLOR_RESET}"
     return
   fi
 
-  echo -e "${CYAN}📤 Export HNB Outline${NC}"
+  echo -e "${COLOR_INFO}Export HNB Outline${COLOR_RESET}"
   echo
 
   # Select outline to export
@@ -268,9 +255,10 @@ export_outline() {
 
   echo
   echo "Export formats:"
-  echo "1) Text  2) Markdown  3) HTML  4) XML  5) CSV"
+  echo -e "${COLOR_HOTKEY}T${COLOR_RESET}ext  ${COLOR_HOTKEY}M${COLOR_RESET}arkdown  ${COLOR_HOTKEY}H${COLOR_RESET}TML  ${COLOR_HOTKEY}X${COLOR_RESET}ML  ${COLOR_HOTKEY}C${COLOR_RESET}SV"
   echo
-  read -p "Select format (1-5): " format
+  echo -ne "${COLOR_PROMPT}Selection: ${COLOR_RESET}"
+  read format
 
   case "$format" in
   1)
@@ -303,7 +291,7 @@ export_to_text() {
   # Simple conversion: replace + with - and preserve indentation
   sed 's/^+/-/g' "$source" >"$output"
 
-  echo -e "${GREEN}✅ Exported to: $output${NC}"
+  echo -e "${COLOR_SUCCESS}[✓] Exported to: $output${COLOR_RESET}"
 }
 
 # Export to Markdown
@@ -342,7 +330,7 @@ export_to_markdown() {
         ' "$source"
   } >"$output"
 
-  echo -e "${GREEN}✅ Exported to: $output${NC}"
+  echo -e "${COLOR_SUCCESS}[✓] Exported to: $output${COLOR_RESET}"
 }
 
 # Export to HTML
@@ -396,7 +384,7 @@ EOF
     echo "</html>"
   } >"$output"
 
-  echo -e "${GREEN}✅ Exported to: $output${NC}"
+  echo -e "${COLOR_SUCCESS}[✓] Exported to: $output${COLOR_RESET}"
 }
 
 # Export to XML
@@ -431,7 +419,7 @@ export_to_xml() {
     echo "</outline>"
   } >"$output"
 
-  echo -e "${GREEN}✅ Exported to: $output${NC}"
+  echo -e "${COLOR_SUCCESS}[✓] Exported to: $output${COLOR_RESET}"
 }
 
 # Export to CSV
@@ -457,17 +445,18 @@ export_to_csv() {
         ' "$source"
   } >"$output"
 
-  echo -e "${GREEN}✅ Exported to: $output${NC}"
+  echo -e "${COLOR_SUCCESS}[✓] Exported to: $output${COLOR_RESET}"
 }
 
 # Import from other formats
 import_outline() {
-  echo -e "${CYAN}📥 Import Outline${NC}"
+  echo -e "${COLOR_INFO}Import Outline${COLOR_RESET}"
   echo
   echo "Import formats:"
-  echo "1) Plain text  2) Markdown  3) Simple list"
+  echo -e "${COLOR_HOTKEY}P${COLOR_RESET}lain text  ${COLOR_HOTKEY}M${COLOR_RESET}arkdown  ${COLOR_HOTKEY}S${COLOR_RESET}imple list"
   echo
-  read -p "Select import format (1-3): " format
+  echo -ne "${COLOR_PROMPT}Selection: ${COLOR_RESET}"
+  read format
 
   case "$format" in
   1)
@@ -529,7 +518,7 @@ import_from_text() {
     }
     ' "$text_file" >"$output"
 
-  echo -e "${GREEN}✅ Imported to: $output${NC}"
+  echo -e "${COLOR_SUCCESS}[✓] Imported to: $output${COLOR_RESET}"
 
   read -p "Open in HNB now? (y/n): " open_now
   [ "$open_now" = "y" ] && hnb --ascii "$output"
@@ -578,7 +567,7 @@ import_from_markdown() {
     }
     ' "$md_file" >"$output"
 
-  echo -e "${GREEN}✅ Imported to: $output${NC}"
+  echo -e "${COLOR_SUCCESS}[✓] Imported to: $output${COLOR_RESET}"
 
   read -p "Open in HNB now? (y/n): " open_now
   [ "$open_now" = "y" ] && hnb --ascii "$output"
@@ -611,7 +600,7 @@ import_from_list() {
     done <"$list_file"
   } >"$output"
 
-  echo -e "${GREEN}✅ Imported to: $output${NC}"
+  echo -e "${COLOR_SUCCESS}[✓] Imported to: $output${COLOR_RESET}"
 
   read -p "Open in HNB now? (y/n): " open_now
   [ "$open_now" = "y" ] && hnb --ascii "$output"
@@ -625,18 +614,18 @@ show_main_menu() {
   clear
   echo
   printf "%*s\n" $(((98 - 11) / 2)) ""
-  echo -e "\033[1;38;5;81m▐ OUTLINER ▌\033[0m"
+  echo -e "${COLOR_HEADER_PRIMARY}▐ OUTLINER ▌${COLOR_RESET}"
   echo
-  echo "1) Tutorial   2) New       3) Open      4) Quick"
-  echo "5) Export     6) Import    7) Browse    8) Stats"
-  echo "Q) Quit"
+  echo -e "${COLOR_HOTKEY}T${COLOR_RESET}utorial   ${COLOR_HOTKEY}N${COLOR_RESET}ew       ${COLOR_HOTKEY}O${COLOR_RESET}pen      ${COLOR_HOTKEY}Q${COLOR_RESET}uick"
+  echo -e "${COLOR_HOTKEY}E${COLOR_RESET}xport     ${COLOR_HOTKEY}I${COLOR_RESET}mport    ${COLOR_HOTKEY}B${COLOR_RESET}rowse    ${COLOR_HOTKEY}S${COLOR_RESET}tats"
+  echo -e "${COLOR_HOTKEY}X${COLOR_RESET} Quit"
   echo
-  printf "Choice: "
+  echo -ne "${COLOR_PROMPT}Selection: ${COLOR_RESET}"
 }
 
 # Browse outlines folder
 browse_folder() {
-  echo -e "${CYAN}📁 Outlines Folder${NC}"
+  echo -e "${COLOR_INFO}Outlines Folder${COLOR_RESET}"
 
   if command -v yazi >/dev/null 2>&1; then
     echo "Opening in Yazi file manager..."
@@ -656,7 +645,7 @@ browse_folder() {
 
 # Show outline statistics
 show_stats() {
-  echo -e "${CYAN}📊 Outline Statistics${NC}"
+  echo -e "${COLOR_INFO}Outline Statistics${COLOR_RESET}"
   echo
 
   local total_outlines=$(find "$OUTLINES_DIR" -name "*.hnb" -type f 2>/dev/null | wc -l)
@@ -758,7 +747,7 @@ main() {
         ;;
       "q" | "quit" | "")
         echo
-        echo -e "${GREEN}Happy outlining!${NC}"
+        echo -e "${COLOR_SUCCESS}Happy outlining!${COLOR_RESET}"
         exit 0
         ;;
       *)

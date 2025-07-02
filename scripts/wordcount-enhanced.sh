@@ -1,6 +1,7 @@
 #!/bin/bash
 # wordcount-enhanced.sh - Cache-Enhanced Word Count Tool for MICRO JOURNAL 2000
 # Performance-optimized version using analytics cache system
+# HARMONIZATION PASS 2: COMPLETED - Fixed menu brackets and Selection prompt, full compliance
 
 # Load standardized color system
 source "${MCRJRNL:-$HOME/.microjournal}/scripts/colors.sh"
@@ -69,7 +70,7 @@ get_word_count_original() {
 count_today() {
     load_goals
     
-    echo -e "\033[92mToday ($TODAY):\033[0m"
+    echo -e "${COLOR_SUCCESS}Today ($TODAY):${COLOR_RESET}"
     
     local today_date=$(date +%Y-%m-%d)
     local total_words=0
@@ -79,7 +80,7 @@ count_today() {
     
     # Try to get today's summary from daily cache first
     if is_cache_valid; then
-        echo -e "\033[94mTIME   WORDS  TITLE\033[0m"
+        echo -e "${COLOR_INFO}TIME   WORDS  TITLE${COLOR_RESET}"
         
         # Get individual sessions from session cache - INSTANT!
         while IFS='|' read -r filename date time word_count char_count duration wpm timestamp; do
@@ -103,32 +104,32 @@ count_today() {
         
         # If no cache entries found, fall back to file scanning
         if [ $file_count -eq 0 ]; then
-            echo -e "\033[93m[Cache miss - scanning files...]\033[0m"
+            echo -e "${COLOR_WARNING}[Cache miss - scanning files...]${COLOR_RESET}"
             count_today_fallback
             return
         fi
     else
-        echo -e "\033[93m[Cache unavailable - scanning files...]\033[0m"
+        echo -e "${COLOR_WARNING}[Cache unavailable - scanning files...]${COLOR_RESET}"
         count_today_fallback
         return
     fi
     
     # Display results
     if [ $file_count -eq 0 ]; then
-        echo -e "\033[91mNo writing files found for today.\033[0m"
+        echo -e "${COLOR_ERROR}No writing files found for today.${COLOR_RESET}"
         if [ "$daily_goal" -gt 0 ]; then
             echo
             echo "Daily Goal: $(show_progress 0 "$daily_goal")"
         fi
     else
         echo
-        echo -e "\033[92mTotal: $file_count sessions, $total_words words\033[0m"
-        echo -e "\033[96mCache performance: $cache_hits hits, $file_scans file scans\033[0m"
+        echo -e "${COLOR_SUCCESS}Total: $file_count sessions, $total_words words${COLOR_RESET}"
+        echo -e "${COLOR_INFO}Cache performance: $cache_hits hits, $file_scans file scans${COLOR_RESET}"
         
         if [ "$daily_goal" -gt 0 ]; then
             echo "Goal Progress: $(show_progress "$total_words" "$daily_goal")"
             if [ "$total_words" -ge "$daily_goal" ]; then
-                echo -e "\033[92m*** Daily goal achieved! ***\033[0m"
+                echo -e "${COLOR_SUCCESS}*** Daily goal achieved! ***${COLOR_RESET}"
             fi
         fi
     fi
@@ -142,7 +143,7 @@ count_today_fallback() {
     local total_words=0
     local file_count=0
     
-    echo -e "\033[94mTIME   WORDS  TITLE\033[0m"
+    echo -e "${COLOR_INFO}TIME   WORDS  TITLE${COLOR_RESET}"
     
     # Find all markdown files from today
     for file in "$DOCS_DIR"/${TODAY}-*.md; do
@@ -157,9 +158,9 @@ count_today_fallback() {
                 if [ -z "$suffix" ]; then
                     suffix="[untitled]"
                 fi
-                printf "\033[96m%s\033[0m \033[93m%4d\033[0m  %s\n" "$time_part" "$words" "$suffix"
+                printf "${COLOR_INFO}%s${COLOR_RESET} ${COLOR_WARNING}%4d${COLOR_RESET}  %s\n" "$time_part" "$words" "$suffix"
             else
-                printf "\033[96m%-5s\033[0m \033[93m%4d\033[0m  %s\n" "" "$words" "$filename"
+                printf "${COLOR_INFO}%-5s${COLOR_RESET} ${COLOR_WARNING}%4d${COLOR_RESET}  %s\n" "" "$words" "$filename"
             fi
             
             total_words=$((total_words + words))
@@ -168,16 +169,16 @@ count_today_fallback() {
     done
     
     if [ $file_count -eq 0 ]; then
-        echo -e "\033[91mNo writing files found for today.\033[0m"
+        echo -e "${COLOR_ERROR}No writing files found for today.${COLOR_RESET}"
     else
         echo
-        echo -e "\033[92mTotal: $file_count sessions, $total_words words\033[0m"
+        echo -e "${COLOR_SUCCESS}Total: $file_count sessions, $total_words words${COLOR_RESET}"
     fi
     
     if [ "$daily_goal" -gt 0 ]; then
         echo "Goal Progress: $(show_progress "$total_words" "$daily_goal")"
         if [ "$total_words" -ge "$daily_goal" ]; then
-            echo -e "\033[92m*** Daily goal achieved! ***\033[0m"
+            echo -e "${COLOR_SUCCESS}*** Daily goal achieved! ***${COLOR_RESET}"
         fi
     fi
     echo
@@ -185,8 +186,8 @@ count_today_fallback() {
 
 # Recent files - OPTIMIZED with cache
 count_recent() {
-    echo -e "\033[92mRecent Writing Sessions (Last 5):\033[0m"
-    echo -e "\033[94mDATE       TIME   WORDS  TITLE\033[0m"
+    echo -e "${COLOR_SUCCESS}Recent Writing Sessions (Last 5):${COLOR_RESET}"
+    echo -e "${COLOR_INFO}DATE       TIME   WORDS  TITLE${COLOR_RESET}"
     
     if is_cache_valid; then
         # Get recent sessions from cache - INSTANT!
@@ -198,21 +199,21 @@ count_recent() {
                 [ -z "$filename" ] && continue
                 
                 local title=$(extract_title_from_filename "$filename")
-                printf "\033[96m%s %s\033[0m \033[93m%4d\033[0m  %s\n" "$date" "$time" "$word_count" "$title"
+                printf "${COLOR_INFO}%s %s${COLOR_RESET} ${COLOR_WARNING}%4d${COLOR_RESET}  %s\n" "$date" "$time" "$word_count" "$title"
                 session_count=$((session_count + 1))
             done
             
             if [ $session_count -eq 0 ]; then
-                echo -e "\033[91mNo cached sessions found.\033[0m"
+                echo -e "${COLOR_ERROR}No cached sessions found.${COLOR_RESET}"
             else
                 echo
-                echo -e "\033[96mLoaded from cache instantly\033[0m"
+                echo -e "${COLOR_INFO}Loaded from cache instantly${COLOR_RESET}"
             fi
         else
-            echo -e "\033[91mNo recent sessions found in cache.\033[0m"
+            echo -e "${COLOR_ERROR}No recent sessions found in cache.${COLOR_RESET}"
         fi
     else
-        echo -e "\033[93m[Cache unavailable - using file scanning...]\033[0m"
+        echo -e "${COLOR_WARNING}[Cache unavailable - using file scanning...]${COLOR_RESET}"
         count_recent_fallback
     fi
     echo
@@ -224,7 +225,7 @@ count_recent_fallback() {
     recent_files=$(find "$DOCS_DIR" -name "*.md" -type f -printf '%T@ %p\n' | sort -nr | head -5 | cut -d' ' -f2-)
     
     if [ -z "$recent_files" ]; then
-        echo -e "\033[91mNo markdown files found.\033[0m"
+        echo -e "${COLOR_ERROR}No markdown files found.${COLOR_RESET}"
     else
         while IFS= read -r file; do
             if [ -n "$file" ]; then
@@ -239,9 +240,9 @@ count_recent_fallback() {
                     if [ -z "$suffix" ]; then
                         suffix="[untitled]"
                     fi
-                    printf "\033[96m%s %s\033[0m \033[93m%4d\033[0m  %s\n" "$mod_date" "$time_part" "$words" "$suffix"
+                    printf "${COLOR_INFO}%s %s${COLOR_RESET} ${COLOR_WARNING}%4d${COLOR_RESET}  %s\n" "$mod_date" "$time_part" "$words" "$suffix"
                 else
-                    printf "\033[96m%s %-5s\033[0m \033[93m%4d\033[0m  %s\n" "$mod_date" "" "$words" "$filename"
+                    printf "${COLOR_INFO}%s %-5s${COLOR_RESET} ${COLOR_WARNING}%4d${COLOR_RESET}  %s\n" "$mod_date" "" "$words" "$filename"
                 fi
             fi
         done <<<"$recent_files"
@@ -250,7 +251,7 @@ count_recent_fallback() {
 
 # All files - DRAMATICALLY OPTIMIZED with cache
 count_all() {
-    echo -e "\033[92mAll Writing Files:\033[0m"
+    echo -e "${COLOR_SUCCESS}All Writing Files:${COLOR_RESET}"
     
     local total_words=0
     local file_count=0
@@ -267,7 +268,7 @@ count_all() {
     declare -a all_titles
     
     if is_cache_valid; then
-        echo -e "\033[96mLoading from analytics cache...\033[0m"
+        echo -e "${COLOR_INFO}Loading from analytics cache...${COLOR_RESET}"
         
         # Read all entries from session cache - MUCH FASTER than file processing
         while IFS='|' read -r filename date time word_count char_count duration wmp timestamp; do
@@ -293,7 +294,7 @@ count_all() {
                 filename=$(basename "$file")
                 # Check if this file is already in cache
                 if ! grep -q "^$filename|" "$SESSION_CACHE" 2>/dev/null; then
-                    echo -e "\033[93m[Processing uncached file: $filename]\033[0m"
+                    echo -e "${COLOR_WARNING}[Processing uncached file: $filename]${COLOR_RESET}"
                     words=$(get_word_count_original "$file")
                     
                     all_files+=("$filename")
@@ -309,13 +310,13 @@ count_all() {
             fi
         done
     else
-        echo -e "\033[93m[Cache unavailable - scanning all files...]\033[0m"
+        echo -e "${COLOR_WARNING}[Cache unavailable - scanning all files...]${COLOR_RESET}"
         count_all_fallback
         return
     fi
     
     if [ $file_count -eq 0 ]; then
-        echo -e "\033[91mNo markdown files found.\033[0m"
+        echo -e "${COLOR_ERROR}No markdown files found.${COLOR_RESET}"
         return
     fi
     
@@ -324,9 +325,9 @@ count_all() {
     
     while true; do
         clear
-        echo -e "\033[92mAll Writing Files:\033[0m Page $current_page of $total_pages"
-        echo -e "\033[96mPerformance: $cache_hits cache hits, $file_scans file scans\033[0m"
-        echo -e "\033[94mDATE       TIME   WORDS  TITLE\033[0m"
+        echo -e "${COLOR_SUCCESS}All Writing Files:${COLOR_RESET} Page $current_page of $total_pages"
+        echo -e "${COLOR_INFO}Performance: $cache_hits cache hits, $file_scans file scans${COLOR_RESET}"
+        echo -e "${COLOR_INFO}DATE       TIME   WORDS  TITLE${COLOR_RESET}"
         
         # Calculate range for current page
         start_idx=$(((current_page - 1) * files_per_page))
@@ -343,11 +344,11 @@ count_all() {
             local time="${all_times[$i]}"
             local title="${all_titles[$i]}"
             
-            printf "\033[96m%s %s\033[0m \033[93m%4d\033[0m  %s\n" "$date" "$time" "$words" "$title"
+            printf "${COLOR_INFO}%s %s${COLOR_RESET} ${COLOR_WARNING}%4d${COLOR_RESET}  %s\n" "$date" "$time" "$words" "$title"
         done
         
         echo
-        echo -e "\033[92mTotal: $file_count files, $total_words words\033[0m"
+        echo -e "${COLOR_SUCCESS}Total: $file_count files, $total_words words${COLOR_RESET}"
         
         # Navigation prompt
         nav_options=""
@@ -385,7 +386,7 @@ count_all_fallback() {
     local total_words=0
     local file_count=0
     
-    echo -e "\033[93mScanning all files (this may take a moment)...\033[0m"
+    echo -e "${COLOR_WARNING}Scanning all files (this may take a moment)...${COLOR_RESET}"
     
     # Original implementation for fallback
     for file in "$DOCS_DIR"/*.md; do
@@ -396,7 +397,7 @@ count_all_fallback() {
         fi
     done
     
-    echo -e "\033[92mTotal: $file_count files, $total_words words\033[0m"
+    echo -e "${COLOR_SUCCESS}Total: $file_count files, $total_words words${COLOR_RESET}"
     echo
     read -p "Press Enter to continue..."
 }
@@ -423,7 +424,7 @@ count_file() {
         # Fallback to original analysis
         display_original_file_analysis "$file"
     else
-        echo -e "\033[91mFile not found: $file\033[0m"
+        echo -e "${COLOR_ERROR}File not found: $file${COLOR_RESET}"
     fi
 }
 
@@ -435,8 +436,8 @@ display_cached_file_analysis() {
     # Parse cache entry: filename|date|time|word_count|char_count|duration|wpm|timestamp
     IFS='|' read -r filename date time word_count char_count duration wmp timestamp <<< "$cache_entry"
     
-    echo -e "File: \033[93m$(basename "$file")\033[0m"
-    echo -e "\033[96m[From Analytics Cache]\033[0m"
+    echo -e "File: ${COLOR_WARNING}$(basename "$file")${COLOR_RESET}"
+    echo -e "${COLOR_INFO}[From Analytics Cache]${COLOR_RESET}"
     
     # Enhanced session information
     echo "Words: $word_count (cached) | Characters: $char_count"
@@ -478,7 +479,7 @@ display_original_file_analysis() {
         read_str="~${read_time}min"
     fi
     
-    echo -e "File: \033[93m$(basename "$file")\033[0m"
+    echo -e "File: ${COLOR_WARNING}$(basename "$file")${COLOR_RESET}"
     echo "Words: $words | Characters: $chars | Lines: $lines | Paragraphs: $paragraphs | $read_str read"
     
     # Readability analysis
@@ -486,7 +487,7 @@ display_original_file_analysis() {
         echo
         perform_readability_analysis "$file" "$words"
     elif [ $words -le 10 ]; then
-        echo -e "\033[93m(File too short for analysis)\033[0m"
+        echo -e "${COLOR_WARNING}(File too short for analysis)${COLOR_RESET}"
     fi
 }
 
@@ -495,7 +496,7 @@ perform_readability_analysis() {
     local file="$1"
     local words="$2"
     
-    echo -e "\033[96mReadability Analysis:\033[0m"
+    echo -e "${COLOR_INFO}Readability Analysis:${COLOR_RESET}"
     
     # Extract key metrics from style output
     style_output=$(style "$file" 2>/dev/null)
@@ -531,7 +532,7 @@ perform_readability_analysis() {
     
     # Word frequency insights
     if [ $words -gt 20 ]; then
-        echo -e "\033[96mWord Analysis:\033[0m"
+        echo -e "${COLOR_INFO}Word Analysis:${COLOR_RESET}"
         
         # Get unique word count and most common word (excluding common words)
         unique_words=$(tr '[:upper:]' '[:lower:]' <"$file" | tr -d '[:punct:]' | tr ' ' '\n' | grep -v '^$' | sort | uniq | wc -l)
@@ -595,9 +596,9 @@ show_progress() {
     done
     
     if [ "$current" -ge "$goal" ]; then
-        echo -e "\033[92m$bar\033[0m ${percentage}% (${current}/${goal})"
+        echo -e "${COLOR_SUCCESS}$bar${COLOR_RESET} ${percentage}% (${current}/${goal})"
     elif [ "$percentage" -ge 80 ]; then
-        echo -e "\033[93m$bar\033[0m ${percentage}% (${current}/${goal})"
+        echo -e "${COLOR_WARNING}$bar${COLOR_RESET} ${percentage}% (${current}/${goal})"
     else
         echo -e "$bar ${percentage}% (${current}/${goal})"
     fi
@@ -630,7 +631,8 @@ center_text() {
     local width=$(get_terminal_width)
     
     # Remove ANSI color codes to get actual visible length
-    local visible_text=$(echo -e "$text" | sed 's/\x1b\[[0-9;]*m//g')
+    # QA-EXEMPT: This sed pattern strips ANSI codes for text measurement, not adding them
+    local visible_text=$(echo -e "$text" | sed 's/\033\[[0-9;]*m//g')
     local visible_length=${#visible_text}
     
     # If text is wider than terminal, return as-is
@@ -673,10 +675,10 @@ while true; do
     fi
     
     # Menu options (left-aligned, space-efficient)
-    echo -e "${COLOR_HOTKEY}[T]${COLOR_RESET}oday's Writing  ${COLOR_HOTKEY}[F]${COLOR_RESET}ile Analysis"
-    echo -e "${COLOR_HOTKEY}[R]${COLOR_RESET}ecent Files     ${COLOR_HOTKEY}[A]${COLOR_RESET}ll Files"
-    echo -e "${COLOR_HOTKEY}[Q]${COLOR_RESET}uit"
-    echo -n "${COLOR_PROMPT}Selection: ${COLOR_RESET}"
+    echo -e "${COLOR_HOTKEY}T${COLOR_RESET}oday's Writing  ${COLOR_HOTKEY}F${COLOR_RESET}ile Analysis"
+    echo -e "${COLOR_HOTKEY}R${COLOR_RESET}ecent Files     ${COLOR_HOTKEY}A${COLOR_RESET}ll Files"
+    echo -e "${COLOR_HOTKEY}Q${COLOR_RESET}uit"
+    echo -ne "${COLOR_PROMPT}Selection: ${COLOR_RESET}"
     
     choice=$(get_single_key | tr '[:upper:]' '[:lower:]')
     
@@ -684,13 +686,13 @@ while true; do
     't')
         clear
         count_today
-        echo -n -e "\033[93mPress any key to continue...\033[0m"
+        echo -n -e "${COLOR_WARNING}Press any key to continue...${COLOR_RESET}"
         read -n 1 -s
         ;;
     'r')
         clear
         count_recent
-        echo -n -e "\033[93mPress any key to continue...\033[0m"
+        echo -n -e "${COLOR_WARNING}Press any key to continue...${COLOR_RESET}"
         read -n 1 -s
         ;;
     'f')
@@ -705,7 +707,7 @@ while true; do
                 echo
                 count_file "$DOCS_DIR/$selected_file"
             else
-                echo -e "\033[91mNo file selected.\033[0m"
+                echo -e "${COLOR_ERROR}No file selected.${COLOR_RESET}"
             fi
             # Return to original directory
             cd - >/dev/null
@@ -721,7 +723,7 @@ while true; do
             echo
             count_file "$filename"
         fi
-        echo -n -e "\033[93mPress any key to continue...\033[0m"
+        echo -n -e "${COLOR_WARNING}Press any key to continue...${COLOR_RESET}"
         read -n 1 -s
         ;;
     'a')
@@ -731,7 +733,7 @@ while true; do
         break
         ;;
     *)
-        echo -n -e "\033[91mInvalid choice. Press any key to try again...\033[0m"
+        echo -n -e "${COLOR_ERROR}Invalid choice. Press any key to try again...${COLOR_RESET}"
         read -n 1 -s
         ;;
     esac
