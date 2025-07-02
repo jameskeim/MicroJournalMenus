@@ -243,6 +243,25 @@ show_cache_stats() {
 # UTILITY FUNCTIONS
 # ═══════════════════════════════════════════════════════════════
 
+# Get accurate word count using pandoc + lua filter when available
+get_accurate_word_count() {
+    local filepath="$1"
+    
+    # Try pandoc with lua filter first (most accurate for markdown)
+    if command -v pandoc >/dev/null 2>&1 && [ -f "$MCRJRNL/filters/wordcount.lua" ]; then
+        local pandoc_count=$(pandoc "$filepath" --lua-filter="$MCRJRNL/filters/wordcount.lua" --to=plain 2>/dev/null | tail -1)
+        
+        # Validate that pandoc returned a number
+        if [[ "$pandoc_count" =~ ^[0-9]+$ ]] && [ "$pandoc_count" -gt 0 ]; then
+            echo "$pandoc_count"
+            return
+        fi
+    fi
+    
+    # Fallback to basic word count
+    wc -w < "$filepath" 2>/dev/null || echo 0
+}
+
 # Format duration in seconds to human readable
 format_duration() {
     local seconds="$1"
@@ -265,6 +284,234 @@ extract_title_from_filename() {
     local title=$(echo "$filename" | sed 's/^[0-9]\{4\}\.[0-9]\{2\}\.[0-9]\{2\}-[0-9]\{4\}-*\(.*\)\.md$/\1/')
     [ -z "$title" ] && title="[untitled]"
     echo "$title"
+}
+
+# ═══════════════════════════════════════════════════════════════
+# GOAL MANAGEMENT FUNCTIONS
+# ═══════════════════════════════════════════════════════════════
+
+# Load goals configuration
+load_goals() {
+    local config_file="${CONFIG_FILE:-$CACHE_DIR/config}"
+    
+    if [ -f "$config_file" ]; then
+        source "$config_file" 2>/dev/null
+    fi
+    
+    # Set defaults matching MICRO JOURNAL 2000 standards
+    daily_goal=${daily_goal:-500}
+    weekly_goal=${weekly_goal:-$((daily_goal * 7))}
+    monthly_goal=${monthly_goal:-$((daily_goal * 30))}
+}
+
+# Save goals configuration
+save_goals() {
+    local config_file="${CONFIG_FILE:-$CACHE_DIR/config}"
+    
+    cat > "$config_file" <<EOF
+# MICRO JOURNAL 2000 Goals Configuration
+# Generated: $(date)
+daily_goal=${daily_goal:-500}
+weekly_goal=${weekly_goal:-3500}
+monthly_goal=${monthly_goal:-15000}
+EOF
+}
+
+# ═══════════════════════════════════════════════════════════════
+# PROGRESS DISPLAY FUNCTIONS
+# ═══════════════════════════════════════════════════════════════
+
+# Show progress bar with percentage
+show_progress() {
+    local current=$1
+    local goal=$2
+    local width=${3:-20}
+    
+    if [ "$goal" -eq 0 ]; then
+        echo "No goal set"
+        return
+    fi
+    
+    local percentage=$((current * 100 / goal))
+    [ "$percentage" -gt 100 ] && percentage=100
+    
+    local filled=$((percentage * width / 100))
+    local empty=$((width - filled))
+    
+    printf "["
+    printf "%${filled}s" | tr ' ' '█'
+    printf "%${empty}s" | tr ' ' '░'
+    printf "] %3d%% (%d/%d words)\n" "$percentage" "$current" "$goal"
+}
+
+# Show compact progress (single line)
+show_compact_progress() {
+    local current=$1
+    local goal=$2
+    local bar_width=${3:-15}
+    
+    if [ "$goal" -eq 0 ]; then
+        return
+    fi
+    
+    local percentage=$((current * 100 / goal))
+    [ "$percentage" -gt 100 ] && percentage=100
+    
+    local filled=$((percentage * bar_width / 100))
+    
+    printf "Today: "
+    printf "["
+    for ((i=0; i<filled; i++)); do printf "█"; done
+    for ((i=filled; i<bar_width; i++)); do printf "░"; done
+    printf "] %d%%" "$percentage"
+}
+
+# Get compact goal progress for session display
+get_compact_goal_progress() {
+    local session_words="$1"
+    
+    # Load goals
+    load_goals
+    
+    # Get today's total from cache or calculate
+    local today_total=0
+    if is_cache_valid; then
+        local today_stats=$(get_today_stats)
+        if [ -n "$today_stats" ]; then
+            today_total=$(echo "$today_stats" | cut -d'|' -f2)
+        fi
+    fi
+    
+    # Add current session words
+    today_total=$((today_total + session_words))
+    
+    # Return compact progress line
+    show_compact_progress "$today_total" "$daily_goal" 15
+}
+
+# ═══════════════════════════════════════════════════════════════
+# TIME-BASED ANALYTICS FUNCTIONS
+# ═══════════════════════════════════════════════════════════════
+
+# Get today's word count - cache-optimized
+get_today_count() {
+    local today_date=$(date +%Y-%m-%d)
+    
+    # Try cache first (instant lookup)
+    if is_cache_valid; then
+        local cache_data=$(get_today_stats)
+        if [ -n "$cache_data" ]; then
+            # Extract total words from cache: date|total_words|file_count|total_time|avg_wpm|timestamp
+            echo "$cache_data" | cut -d'|' -f2
+            return
+        fi
+    fi
+    
+    # Fallback to file scanning
+    local total=0
+    local today_pattern=$(date +"%Y.%m.%d")
+    for file in "$DOCS_DIR"/${today_pattern}-*.md; do
+        if [ -f "$file" ]; then
+            total=$((total + $(get_accurate_word_count "$file")))
+        fi
+    done
+    echo "$total"
+}
+
+# Get today's session count - cache-optimized
+get_today_sessions() {
+    local today_date=$(date +%Y-%m-%d)
+    
+    if is_cache_valid; then
+        local cache_data=$(get_today_stats)
+        if [ -n "$cache_data" ]; then
+            # Extract file count from cache
+            echo "$cache_data" | cut -d'|' -f3
+            return
+        fi
+    fi
+    
+    # Fallback to file counting
+    local count=0
+    local today_pattern=$(date +"%Y.%m.%d")
+    for file in "$DOCS_DIR"/${today_pattern}-*.md; do
+        if [ -f "$file" ]; then
+            count=$((count + 1))
+        fi
+    done
+    echo "$count"
+}
+
+# Get this week's word count - cache-optimized
+get_week_count() {
+    local total=0
+    
+    # Calculate week date range
+    local days_since_monday=$((($(date +%u) - 1)))
+    local week_start=$(date -d "-${days_since_monday} days" +%Y-%m-%d)
+    local week_end=$(date -d "+$((6 - days_since_monday)) days" +%Y-%m-%d)
+    
+    if is_cache_valid; then
+        # Sum from daily cache - MUCH FASTER
+        while IFS='|' read -r date total_words file_count total_time avg_wpm timestamp; do
+            # Skip comments and empty lines
+            [[ "$date" =~ ^#.*$ ]] && continue
+            [ -z "$date" ] && continue
+            
+            # Check if date is in this week
+            if [[ "$date" > "$week_start" || "$date" == "$week_start" ]] && [[ "$date" < "$week_end" || "$date" == "$week_end" ]]; then
+                total=$((total + total_words))
+            fi
+        done < "$DAILY_CACHE"
+        
+        echo "$total"
+        return
+    fi
+    
+    # Fallback to file scanning
+    local monday_pattern=$(date -d "monday" +"%Y.%m.%d")
+    for file in "$DOCS_DIR"/*.md; do
+        if [ -f "$file" ]; then
+            local filename=$(basename "$file")
+            local file_date=$(echo "$filename" | cut -d- -f1)
+            if [[ "$file_date" > "$monday_pattern" || "$file_date" == "$monday_pattern" ]]; then
+                total=$((total + $(get_accurate_word_count "$file")))
+            fi
+        fi
+    done
+    echo "$total"
+}
+
+# Get this month's word count - cache-optimized
+get_month_count() {
+    local total=0
+    local month_pattern=$(date +"%Y-%m")
+    
+    if is_cache_valid; then
+        # Sum from daily cache
+        while IFS='|' read -r date total_words file_count total_time avg_wpm timestamp; do
+            # Skip comments and empty lines
+            [[ "$date" =~ ^#.*$ ]] && continue
+            [ -z "$date" ] && continue
+            
+            # Check if date is in this month
+            if [[ "$date" == ${month_pattern}* ]]; then
+                total=$((total + total_words))
+            fi
+        done < "$DAILY_CACHE"
+        
+        echo "$total"
+        return
+    fi
+    
+    # Fallback to file scanning
+    local month_file_pattern=$(date +"%Y.%m")
+    for file in "$DOCS_DIR"/${month_file_pattern}*.md; do
+        if [ -f "$file" ]; then
+            total=$((total + $(get_accurate_word_count "$file")))
+        fi
+    done
+    echo "$total"
 }
 
 # Initialize cache on script load

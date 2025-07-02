@@ -612,8 +612,6 @@ import_from_list() {
 
 show_main_menu() {
   clear
-  echo
-  printf "%*s\n" $(((98 - 11) / 2)) ""
   echo -e "${COLOR_HEADER_PRIMARY}▐ OUTLINER ▌${COLOR_RESET}"
   echo
   echo -e "${COLOR_HOTKEY}T${COLOR_RESET}utorial   ${COLOR_HOTKEY}N${COLOR_RESET}ew       ${COLOR_HOTKEY}O${COLOR_RESET}pen      ${COLOR_HOTKEY}Q${COLOR_RESET}uick"

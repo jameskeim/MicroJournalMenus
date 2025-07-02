@@ -36,8 +36,7 @@ show_paged() {
 # Main menu loop
 while true; do
   clear
-  echo
-  gum style --foreground 81 --bold "EXPLORE NOTES"
+  echo -e "${COLOR_HEADER_PRIMARY}▐ EXPLORE NOTES ▌${COLOR_RESET}"
   echo
 
   # Compact menu - fits in 12 lines

@@ -9,179 +9,37 @@ DOCS_DIR="$HOME/Documents/writing"
 CONFIG_FILE="$MCRJRNL/config"
 TODAY=$(date +%Y.%m.%d)
 
-# Load standardized color system
+# Load standardized styling systems
 source "$MCRJRNL/scripts/colors.sh"
+source "$MCRJRNL/scripts/gum-styles.sh"
 
-# Import analytics cache system
+# Import analytics cache system (needed for performance optimization)
 source "$MCRJRNL/scripts/analytics-cache.sh"
 
 # ═══════════════════════════════════════════════════════════════
 # CACHE-OPTIMIZED WORD COUNT FUNCTIONS
 # ═══════════════════════════════════════════════════════════════
 
-# Get today's word count - OPTIMIZED with cache lookup
-get_today_count() {
-    local today_date=$(date +%Y-%m-%d)
-    
-    # Try cache first (instant lookup)
-    if is_cache_valid; then
-        local cache_data=$(get_today_stats)
-        if [ -n "$cache_data" ]; then
-            # Extract total words from cache: date|total_words|file_count|total_time|avg_wpm|timestamp
-            echo "$cache_data" | cut -d'|' -f2
-            return
-        fi
-    fi
-    
-    # Fallback to file scanning (original method)
-    echo "Cache miss - scanning files..." >&2
-    local total=0
-    for file in "$DOCS_DIR"/${TODAY}-*.md; do
-        if [ -f "$file" ]; then
-            total=$((total + $(get_word_count "$file")))
-        fi
-    done
-    echo "$total"
-}
+# get_today_count is now provided by analytics-cache.sh
 
-# Get today's session count - OPTIMIZED
-get_today_sessions() {
-    local today_date=$(date +%Y-%m-%d)
-    
-    if is_cache_valid; then
-        local cache_data=$(get_today_stats)
-        if [ -n "$cache_data" ]; then
-            # Extract file count from cache
-            echo "$cache_data" | cut -d'|' -f3
-            return
-        fi
-    fi
-    
-    # Fallback to file counting
-    local count=0
-    for file in "$DOCS_DIR"/${TODAY}-*.md; do
-        if [ -f "$file" ]; then
-            count=$((count + 1))
-        fi
-    done
-    echo "$count"
-}
+# get_today_sessions is now provided by analytics-cache.sh
 
-# Get this week's word count - OPTIMIZED
-get_week_count() {
-    local total=0
-    
-    # Calculate week date range
-    local days_since_monday=$((($(date +%u) - 1)))
-    local week_start=$(date -d "-${days_since_monday} days" +%Y-%m-%d)
-    local week_end=$(date -d "+$((6 - days_since_monday)) days" +%Y-%m-%d)
-    
-    if is_cache_valid; then
-        # Sum from daily cache - MUCH FASTER
-        while IFS='|' read -r date total_words file_count total_time avg_wpm timestamp; do
-            # Skip comments and empty lines
-            [[ "$date" =~ ^#.*$ ]] && continue
-            [ -z "$date" ] && continue
-            
-            # Check if date is in this week
-            if [[ "$date" > "$week_start" || "$date" == "$week_start" ]] && [[ "$date" < "$week_end" || "$date" == "$week_end" ]]; then
-                total=$((total + total_words))
-            fi
-        done < "$DAILY_CACHE"
-        
-        echo "$total"
-        return
-    fi
-    
-    # Fallback to original file scanning method
-    echo "Cache unavailable - scanning files..." >&2
-    for file in "$DOCS_DIR"/*.md; do
-        if [ -f "$file" ]; then
-            local file_date=$(basename "$file" | cut -d'-' -f1-3 | tr '.' '-')
-            if [[ "$file_date" > "$week_start" || "$file_date" == "$week_start" ]] && [[ "$file_date" < "$week_end" || "$file_date" == "$week_end" ]]; then
-                total=$((total + $(get_word_count "$file")))
-            fi
-        fi
-    done
-    echo "$total"
-}
+# get_week_count is now provided by analytics-cache.sh
 
-# Get this month's word count - OPTIMIZED  
-get_month_count() {
-    local total=0
-    local month_prefix=$(date +%Y-%m)
-    
-    if is_cache_valid; then
-        # Sum from daily cache - MUCH FASTER
-        while IFS='|' read -r date total_words file_count total_time avg_wpm timestamp; do
-            # Skip comments and empty lines
-            [[ "$date" =~ ^#.*$ ]] && continue
-            [ -z "$date" ] && continue
-            
-            # Check if date is in this month
-            if [[ "$date" == ${month_prefix}-* ]]; then
-                total=$((total + total_words))
-            fi
-        done < "$DAILY_CACHE"
-        
-        echo "$total"
-        return
-    fi
-    
-    # Fallback to original file scanning method
-    echo "Cache unavailable - scanning files..." >&2
-    local month_pattern=$(date +%Y.%m)
-    for file in "$DOCS_DIR"/${month_pattern}.*.md; do
-        if [ -f "$file" ]; then
-            total=$((total + $(get_word_count "$file")))
-        fi
-    done
-    echo "$total"
-}
+# get_month_count is now provided by analytics-cache.sh
 
 # ═══════════════════════════════════════════════════════════════
 # ORIGINAL FUNCTIONS (UNCHANGED)
 # ═══════════════════════════════════════════════════════════════
 
-# Function to get accurate word count for markdown files (fallback only)
+# Use centralized word counting function from analytics-cache.sh
 get_word_count() {
-    local file="$1"
-    
-    if command -v pandoc >/dev/null 2>&1 && [[ "$file" == *.md ]]; then
-        local pandoc_words=$(pandoc --lua-filter="$HOME/.microjournal/filters/wordcount.lua" "$file" 2>/dev/null)
-        if [ -n "$pandoc_words" ] && [ "$pandoc_words" -gt 0 ]; then
-            echo "$pandoc_words"
-            return
-        fi
-    fi
-    
-    wc -w <"$file"
+    get_accurate_word_count "$1"
 }
 
-# Load goals from config file
-load_config() {
-    if [ -f "$CONFIG_FILE" ]; then
-        source "$CONFIG_FILE" 2>/dev/null
-    fi
-    
-    # Set defaults matching WordCountOverview.md
-    daily_goal=${daily_goal:-500}
-    weekly_goal=${weekly_goal:-3500}
-    monthly_goal=${monthly_goal:-15000}
-}
+# load_config replaced with load_goals from analytics-cache.sh
 
-# Save goals to config file
-save_config() {
-    mkdir -p "$(dirname "$CONFIG_FILE")"
-    cat > "$CONFIG_FILE" << EOF
-# MICRO JOURNAL 2000 - Writing Goals Configuration
-# Cache-Enhanced Goal Tracking System
-
-daily_goal=$daily_goal
-weekly_goal=$weekly_goal
-monthly_goal=$monthly_goal
-EOF
-}
+# save_config replaced with save_goals from analytics-cache.sh
 
 # Show ASCII progress bar
 show_progress() {
@@ -221,12 +79,10 @@ show_progress() {
 # Set goals interface (98x12 optimized)
 set_goals() {
     clear
-    echo
-    printf "%*s\n" $(((98 - 10) / 2)) ""
     echo -e "${COLOR_HEADER_PRIMARY}▐ SET GOALS ▌${COLOR_RESET}"
     echo
     
-    load_config
+    load_goals
     
     echo "Current goals:"
     echo "Daily: $daily_goal words | Weekly: $weekly_goal words | Monthly: $monthly_goal words"
@@ -247,7 +103,7 @@ set_goals() {
         monthly_goal=$new_monthly
     fi
     
-    save_config
+    save_goals
     
     echo
     echo -e "${GREEN}Goals updated successfully${NC}"
@@ -320,7 +176,6 @@ show_today_sessions_paged() {
         clear
         
         # Compact header (Line 1)
-        printf "%*s\n" $(((98 - 30) / 2)) ""
         echo -e "${COLOR_HEADER_PRIMARY}▐ TODAY'S SESSIONS ▌${COLOR_RESET} Page $current_page/$total_pages"
         
         # Session list (Lines 2-9, up to 8 sessions)
@@ -386,7 +241,7 @@ show_today_sessions_paged() {
 
 show_progress_dashboard() {
     clear
-    load_config
+    load_goals
     
     # PERFORMANCE TEST: Time the operations
     local start_time=$(date +%s%N)
@@ -406,7 +261,6 @@ show_progress_dashboard() {
     else
         cache_indicator="${YELLOW}●${NC}"
     fi
-    printf "%*s\n" $(((98 - 35) / 2)) ""
     echo -e "${COLOR_HEADER_PRIMARY}▐ WRITING PROGRESS ▌${COLOR_RESET} ${cache_indicator} ${COLOR_INFO}${duration}ms${COLOR_RESET}"
     
     # Today's goal progress (Line 2)
@@ -459,8 +313,6 @@ show_progress_dashboard() {
 # Cache management menu
 show_cache_menu() {
     clear
-    echo
-    printf "%*s\n" $(((98 - 15) / 2)) ""
     echo -e "${COLOR_HEADER_PRIMARY}▐ CACHE MANAGEMENT ▌${COLOR_RESET}"
     echo
     
@@ -521,8 +373,6 @@ case "${1:-menu}" in
     # Menu mode
     while true; do
         clear
-        echo
-        printf "%*s\n" $(((98 - 8) / 2)) ""
         echo -e "${COLOR_HEADER_PRIMARY}▐ GOALS ▌${COLOR_RESET}"
         echo
         echo -e "${COLOR_HOTKEY}V${COLOR_RESET}iew Progress   ${COLOR_HOTKEY}S${COLOR_RESET}et Goals   ${COLOR_HOTKEY}C${COLOR_RESET}ache Management   ${COLOR_HOTKEY}Q${COLOR_RESET}uit"

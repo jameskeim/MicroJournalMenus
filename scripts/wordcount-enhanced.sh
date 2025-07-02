@@ -3,8 +3,9 @@
 # Performance-optimized version using analytics cache system
 # HARMONIZATION PASS 2: COMPLETED - Fixed menu brackets and Selection prompt, full compliance
 
-# Load standardized color system
+# Load standardized styling systems
 source "${MCRJRNL:-$HOME/.microjournal}/scripts/colors.sh"
+source "$MCRJRNL/scripts/gum-styles.sh"
 
 export FZF_DEFAULT_COMMAND="fd --type f"
 
@@ -12,7 +13,7 @@ export FZF_DEFAULT_COMMAND="fd --type f"
 DOCS_DIR="$HOME/Documents/writing"
 MCRJRNL="${MCRJRNL:-$HOME/.microjournal}"
 
-# Import analytics cache system
+# Import analytics cache system (needed for cache-optimized word counting)
 source "$MCRJRNL/scripts/analytics-cache.sh"
 
 # Ensure writing directory exists
@@ -44,22 +45,10 @@ get_word_count_cached() {
     get_word_count_original "$file"
 }
 
-# Original word counting function (renamed for fallback)
+# Use centralized word counting function from analytics-cache.sh
+# This is just an alias for backward compatibility
 get_word_count_original() {
-    local file="$1"
-    
-    # Check if pandoc is available and file is markdown
-    if command -v pandoc >/dev/null 2>&1 && [[ "$file" == *.md ]]; then
-        # Use accurate pandoc word counting for markdown files
-        local pandoc_words=$(pandoc --lua-filter="$HOME/.microjournal/filters/wordcount.lua" "$file" 2>/dev/null)
-        if [ -n "$pandoc_words" ] && [ "$pandoc_words" -gt 0 ]; then
-            echo "$pandoc_words"
-            return
-        fi
-    fi
-    
-    # Fallback to wc -w for non-markdown files or if pandoc fails
-    wc -w <"$file"
+    get_accurate_word_count "$1"
 }
 
 # ═══════════════════════════════════════════════════════════════
@@ -562,47 +551,10 @@ perform_readability_analysis() {
 # ORIGINAL UTILITY FUNCTIONS (PRESERVED)
 # ═══════════════════════════════════════════════════════════════
 
-# Load goals if config exists
-load_goals() {
-    if [ -f "$HOME/.microjournal/config" ]; then
-        source "$HOME/.microjournal/config" 2>/dev/null
-    fi
-    daily_goal=${daily_goal:-500}
-}
+# load_goals is now provided by analytics-cache.sh
 
-# Show progress bar
-show_progress() {
-    local current=$1
-    local goal=$2
-    local width=20
-    
-    if [ "$goal" -eq 0 ]; then
-        return
-    fi
-    
-    local percentage=$((current * 100 / goal))
-    local filled=$((current * width / goal))
-    
-    if [ "$filled" -gt "$width" ]; then
-        filled=$width
-    fi
-    
-    local bar=""
-    for i in $(seq 1 $filled); do
-        bar="${bar}█"
-    done
-    for i in $(seq $((filled + 1)) $width); do
-        bar="${bar}░"
-    done
-    
-    if [ "$current" -ge "$goal" ]; then
-        echo -e "${COLOR_SUCCESS}$bar${COLOR_RESET} ${percentage}% (${current}/${goal})"
-    elif [ "$percentage" -ge 80 ]; then
-        echo -e "${COLOR_WARNING}$bar${COLOR_RESET} ${percentage}% (${current}/${goal})"
-    else
-        echo -e "$bar ${percentage}% (${current}/${goal})"
-    fi
-}
+# show_progress is now provided by analytics-cache.sh
+# Note: The centralized version has slightly different colors - update if needed
 
 # Function to get terminal width with fallbacks
 get_terminal_width() {
