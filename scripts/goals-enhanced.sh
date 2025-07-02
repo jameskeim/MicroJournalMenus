@@ -16,6 +16,9 @@ source "$MCRJRNL/scripts/gum-styles.sh"
 # Import analytics cache system (needed for performance optimization)
 source "$MCRJRNL/scripts/analytics-cache.sh"
 
+# Import UI utilities
+source "$MCRJRNL/scripts/ui-utils.sh"
+
 # ═══════════════════════════════════════════════════════════════
 # CACHE-OPTIMIZED WORD COUNT FUNCTIONS
 # ═══════════════════════════════════════════════════════════════
@@ -41,40 +44,7 @@ get_word_count() {
 
 # save_config replaced with save_goals from analytics-cache.sh
 
-# Show ASCII progress bar
-show_progress() {
-    local current=$1
-    local goal=$2
-    local width=20
-    
-    if [ "$goal" -eq 0 ]; then
-        echo "No goal set"
-        return
-    fi
-    
-    local percentage=$((current * 100 / goal))
-    local filled=$((current * width / goal))
-    
-    if [ "$filled" -gt "$width" ]; then
-        filled=$width
-    fi
-    
-    local bar=""
-    for i in $(seq 1 $filled); do
-        bar="${bar}█"
-    done
-    for i in $(seq $((filled + 1)) $width); do
-        bar="${bar}░"
-    done
-    
-    if [ "$current" -ge "$goal" ]; then
-        echo -e "${GREEN}$bar${NC} ${percentage}% (${current}/${goal})"
-    elif [ "$percentage" -ge 80 ]; then
-        echo -e "${YELLOW}$bar${NC} ${percentage}% (${current}/${goal})"
-    else
-        echo -e "$bar ${percentage}% (${current}/${goal})"
-    fi
-}
+# show_progress is now provided by analytics-cache.sh
 
 # Set goals interface (98x12 optimized)
 set_goals() {
@@ -115,14 +85,7 @@ set_goals() {
 # PAGER UTILITY FUNCTIONS
 # ═══════════════════════════════════════════════════════════════
 
-# Function to get single keypress (borrowed from wordcount-enhanced.sh)
-get_single_key() {
-    local old_tty_settings=$(stty -g)
-    stty -icanon -echo min 1 time 0
-    local key=$(dd bs=1 count=1 2>/dev/null)
-    stty "$old_tty_settings"
-    echo "$key"
-}
+# get_single_key is now provided by ui-utils.sh
 
 # Show today's sessions with pagination (98x12 optimized)
 show_today_sessions_paged() {

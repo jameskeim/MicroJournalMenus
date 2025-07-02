@@ -16,6 +16,9 @@ MCRJRNL="${MCRJRNL:-$HOME/.microjournal}"
 # Import analytics cache system (needed for cache-optimized word counting)
 source "$MCRJRNL/scripts/analytics-cache.sh"
 
+# Import UI utilities
+source "$MCRJRNL/scripts/ui-utils.sh"
+
 # Ensure writing directory exists
 mkdir -p "$DOCS_DIR"
 
@@ -600,13 +603,7 @@ center_text() {
 }
 
 # Function to get single keypress
-get_single_key() {
-    local old_tty_settings=$(stty -g)
-    stty -icanon -echo min 1 time 0
-    local key=$(dd bs=1 count=1 2>/dev/null)
-    stty "$old_tty_settings"
-    echo "$key"
-}
+# get_single_key is now provided by ui-utils.sh
 
 # ═══════════════════════════════════════════════════════════════
 # MAIN MENU LOOP
@@ -653,7 +650,7 @@ while true; do
         if command -v fzf >/dev/null 2>&1; then
             # Change to writing directory and use relative paths
             cd "$DOCS_DIR" || exit 1
-            selected_file=$(find . -name "*.md" -type f 2>/dev/null | sed 's|^\./||' | fzf --height=12 --reverse --no-border --prompt="Select file (Esc to cancel): " --preview='wc -w {} && echo && head -5 {}')
+            selected_file=$(find . -name "*.md" -type f 2>/dev/null | sed 's|^\./||' | fzf --height=12 --reverse --no-border --prompt="Select file (Esc to cancel): " --preview='echo "Words: $(get_word_count_cached {})" && echo && head -5 {}')
             
             if [ -n "$selected_file" ]; then
                 echo

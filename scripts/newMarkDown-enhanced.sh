@@ -7,24 +7,9 @@
 EDITOR="${EDITOR:-nvim}"
 MCRJRNL="${MCRJRNL:-$HOME/.microjournal}"
 
-# Minimal imports for fast startup - full systems loaded after editor
+# Minimal imports for fast startup - heavy analytics loaded after editor
 source "$MCRJRNL/scripts/colors.sh"
-
-# ═══════════════════════════════════════════════════════════════
-# UTILITY FUNCTIONS
-# ═══════════════════════════════════════════════════════════════
-
-# Truncate text to fit within width constraints
-truncate_text() {
-    local text="$1"
-    local max_width="${2:-98}"
-    
-    if [ "${#text}" -gt "$max_width" ]; then
-        echo "${text:0:$((max_width - 3))}..."
-    else
-        echo "$text"
-    fi
-}
+source "$MCRJRNL/scripts/display-constraints.sh"  # Lightweight display utilities
 
 # ═══════════════════════════════════════════════════════════════
 # SESSION SETUP AND TIMING

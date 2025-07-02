@@ -344,8 +344,8 @@ show_progress() {
     printf "] %3d%% (%d/%d words)\n" "$percentage" "$current" "$goal"
 }
 
-# Show compact progress (single line)
-show_compact_progress() {
+# Show today's progress (single line) - renamed to avoid conflict with display-constraints.sh
+show_today_progress() {
     local current=$1
     local goal=$2
     local bar_width=${3:-15}
@@ -386,7 +386,7 @@ get_compact_goal_progress() {
     today_total=$((today_total + session_words))
     
     # Return compact progress line
-    show_compact_progress "$today_total" "$daily_goal" 15
+    show_today_progress "$today_total" "$daily_goal" 15
 }
 
 # ═══════════════════════════════════════════════════════════════

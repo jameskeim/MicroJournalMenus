@@ -48,6 +48,28 @@ paginate_output() {
     done
 }
 
+# Simple content pagination for constrained displays - generalized from notes-explorer.sh
+show_paged_content() {
+    local content="$1"
+    local lines_per_page="${2:-8}"  # Default for 98x12 with headers/prompts
+    local lines_count=$(echo "$content" | wc -l)
+
+    if [ "$lines_count" -le "$lines_per_page" ]; then
+        # Fits on screen, show directly
+        echo "$content"
+    else
+        # Use simple pagination
+        echo "$content" | head -"$lines_per_page"
+        echo
+        printf "Showing %d of %d lines. Press Enter to see more, q to quit: " "$lines_per_page" "$lines_count"
+        read -r response
+        if [ "$response" != "q" ]; then
+            local remaining_content=$(echo "$content" | tail -n +$((lines_per_page + 1)))
+            show_paged_content "$remaining_content" "$lines_per_page"
+        fi
+    fi
+}
+
 # Limit session display to prevent scrolling
 limit_session_display() {
     local max_sessions="${1:-3}"  # Default to 3 sessions
@@ -259,7 +281,7 @@ test_display_constraints() {
 }
 
 # Export functions for use in other scripts
-export -f can_display_lines paginate_output limit_session_display
+export -f can_display_lines paginate_output show_paged_content limit_session_display
 export -f truncate_text center_text_constrained
 export -f show_compact_header show_compact_session_complete show_compact_progress
 export -f show_compact_analytics show_ultra_compact_menu

@@ -9,28 +9,16 @@ MCRJRNL_DIR="${MCRJRNL:-$HOME/.microjournal}"
 # Load standardized styling systems
 source "$MCRJRNL_DIR/scripts/colors.sh"
 source "$MCRJRNL_DIR/scripts/gum-styles.sh"
+source "$MCRJRNL_DIR/scripts/display-constraints.sh"
 
 # Ensure notes directory exists
 mkdir -p "$NOTES_DIR"
 
 # Function to show paginated output
+# show_paged is now provided by display-constraints.sh as show_paged_content
 show_paged() {
-  local content="$1"
-  local lines_count=$(echo "$content" | wc -l)
-
-  if [ "$lines_count" -le 8 ]; then
-    # Fits on screen, show directly
-    echo "$content"
-  else
-    # Use simple pagination
-    echo "$content" | head -8
-    echo
-    printf "Showing 8 of $lines_count lines. Press Enter to see more, q to quit: "
-    read -r response
-    if [ "$response" != "q" ]; then
-      echo "$content" | tail -n +9
-    fi
-  fi
+    local content="$1"
+    show_paged_content "$content" 8
 }
 
 # Main menu loop

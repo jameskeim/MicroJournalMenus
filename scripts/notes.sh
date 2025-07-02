@@ -13,6 +13,7 @@
 MCRJRNL="${MCRJRNL:-$HOME/.microjournal}"
 source "$MCRJRNL/scripts/colors.sh"
 source "$MCRJRNL/scripts/gum-styles.sh"
+source "$MCRJRNL/scripts/ui-utils.sh"
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # DISPLAY CONSTRAINTS ANALYSIS
@@ -85,37 +86,15 @@ format_files_compact() {
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # Lightning-fast file discovery with fd (sorted by recent modification)
+# find_notes is now provided by ui-utils.sh as find_files_fast
 find_notes() {
-  if command -v fd >/dev/null 2>&1; then
-    # fd is 3-5x faster than find, sort by modification time
-    fd -t f -e md . "$NOTES_DIR" --max-depth 5 -x ls -t {} + 2>/dev/null
-  else
-    # fallback: find and sort by modification time (recent first)
-    find "$NOTES_DIR" -type f -name "*.md" -maxdepth 5 2>/dev/null | xargs ls -t 2>/dev/null
-  fi
+    find_files_fast "$NOTES_DIR" "*" "md" 5
 }
 
-# Blazing-fast content search with ripgrep
+# search_content is now provided by ui-utils.sh as search_content_fast
 search_content() {
-  local term="$1"
-  if [ -z "$term" ]; then
-    find_notes
-    return
-  fi
-
-  {
-    # Filename search (fd with pattern)
-    if command -v fd >/dev/null 2>&1; then
-      fd -t f "$term" "$NOTES_DIR" --max-depth 5 -i
-    fi
-
-    # Content search (ripgrep is 5-10x faster than grep)
-    if command -v rg >/dev/null 2>&1; then
-      rg -l -i "$term" "$NOTES_DIR" --type md
-    else
-      grep -r -l -i "$term" "$NOTES_DIR" --include="*.md" 2>/dev/null
-    fi
-  } | sort -u | xargs ls -t 2>/dev/null
+    local term="$1"
+    search_content_fast "$term" "$NOTES_DIR" "md" 5
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

@@ -19,7 +19,7 @@ get_compact_goal_progress() {
     local today_total=$((session_words + 123))  # Simulate existing words
     local daily_goal=500
     
-    show_compact_progress "$today_total" "$daily_goal" 15
+    show_today_progress "$today_total" "$daily_goal" 15
 }
 
 format_duration() {
